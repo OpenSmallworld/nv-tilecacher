@@ -5,8 +5,8 @@ A nodejs client that generates requests for map tiles from Network Viewer based 
 ## To install:
 * Install Nodejs
 * Install dependencies:
-** npm install async
-** npm install command-line-args
+  * npm install async
+  * npm install command-line-args
 
 ## Running:
 

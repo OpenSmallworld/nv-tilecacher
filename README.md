@@ -18,7 +18,7 @@ Configuration
 
 The client uses a file containing a JSON description of what area requests should be made for. The format of the file is something like this:
 
-`
+```json
 {
 	"cacheareas": [
 		{
@@ -40,4 +40,4 @@ The client uses a file containing a JSON description of what area requests shoul
 		}
 	]
 }
-`
+```

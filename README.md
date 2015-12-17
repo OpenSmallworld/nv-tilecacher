@@ -101,7 +101,7 @@ Note that some of the parameters correspond to WMTS request parameters, in parti
 
 ## Command Line Options
 
-`
+```
 Options
 
   -c, --configfile string   The name of a JSON file containing the caching definitions
@@ -109,4 +109,4 @@ Options
   -w, --workers             Number of workers (default 10)
   -o, --countonly           Whether to only count tiles or not -true or false (default false)
   -r, --reportinterval      The reporting interval for progress (integer)
- `
+ ```

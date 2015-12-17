@@ -42,7 +42,48 @@ The client uses a file containing a JSON description of what area requests shoul
 }
 ```
 
-The configuration file can contain multiple areas to request tiles for by adding JSON objects to the cacheareas array. In the example above there is only one area defined, but more could be created by copying and pasting that example many times and changing the parameters appropriately.
+The configuration file can contain multiple areas to request tiles for by adding JSON objects to the cacheareas array. In the example above there is only one area defined, but more could be created by copying and pasting that example many times and changing the parameters appropriately, something like this:
+
+```json
+{
+	"cacheareas": [
+		{
+			"description": "Chicago, Illinois, USA",
+			"servername": "cbgswws05.nms.dev.ps.ge.com",
+			"serverport": 3200,
+			"layernames": ["Support"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 0,
+			"stopzoomlevel": 21,
+			"bounds": {
+				"minx": -88.416595,
+				"miny": 41.435761,
+				"maxx": -87.424393,
+				"maxy": 42.206619
+			}
+		},
+		{
+			"description": "Denver, Colorado, USA",
+			"servername": "cbgswws05.nms.dev.ps.ge.com",
+			"serverport": 3200,
+			"layernames": ["Support"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 0,
+			"stopzoomlevel": 21,
+			"bounds": {
+				"minx": -105.239410,
+				"miny": 39.525726,
+				"maxx": -104.654388,
+				"maxy": 39.952352
+			}
+		}
+	]
+}
+```
 
 The parameters in the file are as follows:
 * description - A string containing a description of the area

@@ -61,64 +61,64 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 		
 		console.log("Number of tiles to request = " + tilesToDo);
 		
-		if (countOnly) return;
-		
-		console.log("Starting requests...");
-		
-		// Define the interval that progress is reported on. Typically will be 1000 calls, but if the 
-		// total is less than 1000, it will be the size of the total requests.
-		if (!reportInterval) reportInterval = Math.min(1000, tilesToDo);
-		
-		var startTime = (new Date).getTime();
-		
-		function makeRequest(task, callback) {
-			var req = http.request({
-				host: task.servername,
-				path: task.layerTileUrl,
-				port: task.serverport,
-				method: 'GET'
-			}, function(response) {
-				var currentTime = (new Date).getTime();
-				var elapsedTime = (currentTime - startTime) / 1000;
-				
-				tilesDone++;
-				var rate = tilesDone / elapsedTime;
-				var remainingTiles = tilesToDo - tilesDone;
-				var etc = (remainingTiles / rate) / (60 * 60);
-				
-				if (tilesDone % reportInterval == 0) {
-					console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
-						remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
-				}
-				callback();
-			});
-			req.on('error', function(e) {
-				console.log("Error: " + e.message);
-				callback(e);
-			});
-			req.end();
-		}
-		
-		var q = async.queue(makeRequest, numWorkers);
-		
-		// Actually request the tiles.
-		for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
-			var url = requestHeader + "&TILEMATRIX=" + zoom;
-
-			var tiles = getTileNumbers(zoom, cacheArea.bounds);
-			//console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
-			for (var x = tiles[0]; x <= tiles[2]; x++) {
-				for (var y = tiles[1]; y <= tiles[3]; y++) {
-					var tileUrl = url + "&TILECOL=" + x + "&TILEROW=" + y;
+		if (!countOnly) {
+			console.log("Starting requests...");
+			
+			// Define the interval that progress is reported on. Typically will be 1000 calls, but if the 
+			// total is less than 1000, it will be the size of the total requests.
+			if (!reportInterval) reportInterval = Math.min(1000, tilesToDo);
+			
+			var startTime = (new Date).getTime();
+			
+			function makeRequest(task, callback) {
+				var req = http.request({
+					host: task.servername,
+					path: task.layerTileUrl,
+					port: task.serverport,
+					method: 'GET'
+				}, function(response) {
+					var currentTime = (new Date).getTime();
+					var elapsedTime = (currentTime - startTime) / 1000;
 					
-					for (var index = 0; index < cacheArea.layernames.length; index++) {
-						var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + cacheArea.layernames[index]);
-						q.push({ 
-							servername: cacheArea.servername,
-							serverport: cacheArea.serverport,
-							layerTileUrl: layerTileUrl
-						}, function(err) {
-						});
+					tilesDone++;
+					var rate = tilesDone / elapsedTime;
+					var remainingTiles = tilesToDo - tilesDone;
+					var etc = (remainingTiles / rate) / (60 * 60);
+					
+					if (tilesDone % reportInterval == 0) {
+						console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
+							remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
+					}
+					callback();
+				});
+				req.on('error', function(e) {
+					console.log("Error: " + e.message);
+					callback(e);
+				});
+				req.end();
+			}
+			
+			var q = async.queue(makeRequest, numWorkers);
+			
+			// Actually request the tiles.
+			for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
+				var url = requestHeader + "&TILEMATRIX=" + zoom;
+
+				var tiles = getTileNumbers(zoom, cacheArea.bounds);
+				//console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
+				for (var x = tiles[0]; x <= tiles[2]; x++) {
+					for (var y = tiles[1]; y <= tiles[3]; y++) {
+						var tileUrl = url + "&TILECOL=" + x + "&TILEROW=" + y;
+						
+						for (var index = 0; index < cacheArea.layernames.length; index++) {
+							var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + cacheArea.layernames[index]);
+							q.push({ 
+								servername: cacheArea.servername,
+								serverport: cacheArea.serverport,
+								layerTileUrl: layerTileUrl
+							}, function(err) {
+							});
+						}
 					}
 				}
 			}

@@ -110,3 +110,7 @@ Options
   -o, --countonly               Whether to only count tiles or not -true or false (default false)
   -r, --reportinterval number   The reporting interval for progress (integer)
  ```
+ 
+ ### Notes
+ 
+ The number of workers affects the number of requests that will be generated - in general more workers, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to provide a socket for the request to connect to. If you are seeing connection errors after a while, try restarting with a lower worker number.

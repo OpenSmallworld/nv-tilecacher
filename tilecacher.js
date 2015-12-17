@@ -14,7 +14,8 @@ var cli = commandLineArgs([
 	{ name: 'configfile', alias: 'c', type: String, description: 'The name of a JSON file containing the caching definitions' },
 	{ name: 'help', alias: 'h', description: 'Display usage' },
 	{ name: 'workers', alias: 'w', description: 'Number of workers (default 10)'},
-	{ name: 'countonly', alias: 'o', description: 'Whether to only count tiles or not - true or false (default false)'}
+	{ name: 'countonly', alias: 'o', description: 'Whether to only count tiles or not - true or false (default false)'},
+	{ name: 'reportinterval', alias: 'r', description: 'The reporting interval for progress (integer)'}
 ])
 
 var options = cli.parse();
@@ -32,6 +33,8 @@ var numWorkers = (options.workers) ? options.workers : 10;
 
 var countOnly = (options.countonly == "true") ? true : false;
 
+var reportInterval = options.reportinterval;
+
 fs.readFile(configFileName, 'utf8', function(err, data) {
 	if (err) throw err;
 	config = JSON.parse(data);
@@ -47,26 +50,24 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 		var tilesToDo = 0;
 		var tilesDone = 0;
 		
+		console.log("Calculating number of tiles...");
+		
 		// Count the number of tiles that will be requested.
 		for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
 			var tiles = getTileNumbers(zoom, cacheArea.bounds);
 			
-			for (var x = tiles[0]; x <= tiles[2]; x++) {
-				for (var y = tiles[1]; y <= tiles[3]; y++) {				
-					for (var index = 0; index < cacheArea.layernames.length; index++) {
-						tilesToDo++;
-					}
-				}
-			}
+			tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * cacheArea.layernames.length;
 		}
 		
 		console.log("Number of tiles to request = " + tilesToDo);
 		
 		if (countOnly) return;
 		
+		console.log("Starting requests...");
+		
 		// Define the interval that progress is reported on. Typically will be 1000 calls, but if the 
 		// total is less than 1000, it will be the size of the total requests.
-		var countInterval = Math.min(1000, tilesToDo);
+		if (!reportInterval) reportInterval = Math.min(1000, tilesToDo);
 		
 		var startTime = (new Date).getTime();
 		
@@ -85,7 +86,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 				var remainingTiles = tilesToDo - tilesDone;
 				var etc = (remainingTiles / rate) / (60 * 60);
 				
-				if (tilesDone % countInterval == 0) {
+				if (tilesDone % reportInterval == 0) {
 					console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
 						remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
 				}
@@ -140,11 +141,19 @@ function getTileNumbers(zoom, bounds) {
 	
 	var n = Math.pow(2, zoom);	
 	var minXTile = Math.floor(n * ((bounds.minx + 180) / 360));
-	var maxXTile = Math.floor(n * ((bounds.maxx + 180) / 360));
+	
+	if (bounds.maxx == 180 && bounds.minx == -180) {
+		// 180 degrees is the same as -180 degrees, so don't double count.
+		maxXTile = Math.floor(n * ((bounds.maxx + 180) / 360)) - 1;
+	}
+	else {
+		maxXTile = Math.floor(n * ((bounds.maxx + 180) / 360));
+	}
 	var minLatRad = Math.radians(bounds.miny);
 	var maxLatRad = Math.radians(bounds.maxy);
-	var minYTile = Math.floor(n * (1.0 - (Math.log(Math.tan(minLatRad) + sec(minLatRad)) / Math.PI)) / 2.0);
-	var maxYTile = Math.floor(n * (1.0 - (Math.log(Math.tan(maxLatRad) + sec(maxLatRad)) / Math.PI)) / 2.0);
+	// The tile matrix's origin is at top left-hand corner, hence the use of the min lat for the max y tile etc.
+	var minYTile = Math.floor(n * (1.0 - (Math.log(Math.tan(maxLatRad) + sec(maxLatRad)) / Math.PI)) / 2.0);
+	var maxYTile = Math.floor(n * (1.0 - (Math.log(Math.tan(minLatRad) + sec(minLatRad)) / Math.PI)) / 2.0);
 	
 	//console.log("zoom = " + zoom + ", x = " + minXTile + ", y = " + minYTile + ", xmax = " + maxXTile + ", maxy = " + maxYTile);
 	

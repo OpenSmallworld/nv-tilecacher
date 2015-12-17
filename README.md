@@ -114,3 +114,34 @@ Options
 ### Notes on command line options
  
 The number of workers affects the number of requests that will be generated - in general more workers, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to provide a socket for the request to connect to. If you are seeing connection errors after a while, try restarting with a lower worker number.
+
+## Output
+
+The tilecacher will report its progress in a form similar to that below...
+
+```
+{ description: 'City of Exeter, UK',
+  servername: 'cbgswws05.nms.dev.ps.ge.com',
+  serverport: 3200,
+  layernames: [ 'Support', 'Network' ],
+  stylename: '',
+  format: 'image/png',
+  tilematrixset: 'EPSG-900913',
+  startzoomlevel: 0,
+  stopzoomlevel: 20,
+  bounds:
+   { minx: -3.567553,
+     miny: 50.702354,
+     maxx: -3.494596,
+     maxy: 50.735503 } }
+Calculating number of tiles...
+Number of tiles to request = 86178
+Starting requests...
+Tiles done = 1000, rate = 117.53643629525153 requests/second (85178 left, elapsed time = 8.508 seconds, ETC = 0.20130400666666665 hours)
+Tiles done = 2000, rate = 144.57134595923088 requests/second (84178 left, elapsed time = 13.834 seconds, ETC = 0.16173867388888888 hours)
+Tiles done = 3000, rate = 153.75153751537516 requests/second (83178 left, elapsed time = 19.512 seconds, ETC = 0.15027491999999998 hours)
+Tiles done = 4000, rate = 143.98329793743926 requests/second (82178 left, elapsed time = 27.781 seconds, ETC = 0.15854076513888887 hours)
+Tiles done = 5000, rate = 146.2287602725704 requests/second (81178 left, elapsed time = 34.193 seconds, ETC = 0.15420663077777777 hours)
+```
+
+

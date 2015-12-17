@@ -56,4 +56,4 @@ The parameters in the file are as follows:
 * stopzoomlevel - The lowermost zoom level to use
 * bounds - An object containing the bottom left and top right coordinates of the area (in lat/lons aka EPSG4326)
 
-Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset.
+Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset. The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.

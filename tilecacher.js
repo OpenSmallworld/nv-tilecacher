@@ -3,6 +3,7 @@ var fs = require('fs');
 var async = require('async');
 var commandLineArgs = require('command-line-args');
 
+// Ramp up the number of sockets so that we can make as many web calls as possible.
 http.globalAgent.maxSockets = 500000;
 
 const usageOptions = {
@@ -12,7 +13,8 @@ const usageOptions = {
 var cli = commandLineArgs([
 	{ name: 'configfile', alias: 'c', type: String, description: 'The name of a JSON file containing the caching definitions' },
 	{ name: 'help', alias: 'h', description: 'Display usage' },
-	{ name: 'workers', alias: 'w', description: 'Number of workers (default 10)'}
+	{ name: 'workers', alias: 'w', description: 'Number of workers (default 10)'},
+	{ name: 'countonly', alias: 'o', description: 'Whether to only count tiles or not - true or false (default false)'}
 ])
 
 var options = cli.parse();
@@ -25,7 +27,10 @@ if (options.help || !options.configfile) {
 var configFileName = options.configfile;
 var config;
 
+// The default number of workers is 10. This can be overridden using the -w parameter.
 var numWorkers = (options.workers) ? options.workers : 10;
+
+var countOnly = (options.countonly == "true") ? true : false;
 
 fs.readFile(configFileName, 'utf8', function(err, data) {
 	if (err) throw err;
@@ -57,6 +62,12 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 		
 		console.log("Number of tiles to request = " + tilesToDo);
 		
+		if (countOnly) return;
+		
+		// Define the interval that progress is reported on. Typically will be 1000 calls, but if the 
+		// total is less than 1000, it will be the size of the total requests.
+		var countInterval = Math.min(1000, tilesToDo);
+		
 		var startTime = (new Date).getTime();
 		
 		function makeRequest(task, callback) {
@@ -74,7 +85,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 				var remainingTiles = tilesToDo - tilesDone;
 				var etc = (remainingTiles / rate) / (60 * 60);
 				
-				if (tilesDone % 1000 == 0) {
+				if (tilesDone % countInterval == 0) {
 					console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
 						remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
 				}

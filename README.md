@@ -2,7 +2,7 @@
 
 A nodejs client that generates requests for map tiles from Network Viewer based server infrastructures.
 
-## To install:
+## To install and run:
 * Install Nodejs
 * Install dependencies:
   * npm install async
@@ -13,12 +13,6 @@ Place a copy of tilecacher.js and a config.json file in a directory and then run
 `
 node tilecacher.js -c config.json
 `
-
-## Running:
-
-At the command line type:
-
-node tilecacher.js -c <configuration file>
 
 ## Configuration
 

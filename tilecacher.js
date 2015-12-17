@@ -13,9 +13,9 @@ const usageOptions = {
 var cli = commandLineArgs([
 	{ name: 'configfile', alias: 'c', type: String, description: 'The name of a JSON file containing the caching definitions' },
 	{ name: 'help', alias: 'h', description: 'Display usage' },
-	{ name: 'workers', alias: 'w', description: 'Number of workers (default 10)'},
-	{ name: 'countonly', alias: 'o', description: 'Whether to only count tiles or not - true or false (default false)'},
-	{ name: 'reportinterval', alias: 'r', description: 'The reporting interval for progress (integer)'}
+	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of workers (default 10)'},
+	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
+	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The reporting interval for progress (integer)'}
 ])
 
 var options = cli.parse();
@@ -31,7 +31,7 @@ var config;
 // The default number of workers is 10. This can be overridden using the -w parameter.
 var numWorkers = (options.workers) ? options.workers : 10;
 
-var countOnly = (options.countonly == "true") ? true : false;
+var countOnly = options.countonly;
 
 var reportInterval = options.reportinterval;
 

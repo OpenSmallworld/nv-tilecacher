@@ -30,12 +30,12 @@ The client uses a file containing a JSON description of what area requests shoul
 			"format": "image/png",
 			"tilematrixset": "EPSG-900913",
 			"startzoomlevel": 0,
-			"stopzoomlevel": 21,
+			"stopzoomlevel": 20,
 			"bounds": {
 				"minx": -3.567553,
-				"miny": 50.735503,
+				"miny": 50.702354,
 				"maxx": -3.494596,
-				"maxy": 50.702354
+				"maxy": 50.735503
 			}
 		}
 	]

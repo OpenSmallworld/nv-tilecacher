@@ -88,7 +88,7 @@ The configuration file can contain multiple areas to request tiles for by adding
 The parameters in the file are as follows:
 * description - A string containing a description of the area
 * servername - The machine name of the server that responds to the requests
-* serverport - The TCP port that the server is listening one
+* serverport - The TCP port that the server is listening on
 * layernames - An array of strings representing the names of the layers that requests should be made for
 * stylename - The name of the styles to be used
 * format - The MIME type of the raster image that should be returned

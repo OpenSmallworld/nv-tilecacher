@@ -98,3 +98,15 @@ The parameters in the file are as follows:
 * bounds - An object containing the bottom left and top right coordinates of the area (in lat/lons aka EPSG4326)
 
 Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset. The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.
+
+## Command Line Options
+
+`
+Options
+
+  -c, --configfile string   The name of a JSON file containing the caching definitions
+  -h, --help                Display usage
+  -w, --workers             Number of workers (default 10)
+  -o, --countonly           Whether to only count tiles or not -true or false (default false)
+  -r, --reportinterval      The reporting interval for progress (integer)
+ `

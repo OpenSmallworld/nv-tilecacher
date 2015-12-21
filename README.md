@@ -89,7 +89,7 @@ The parameters in the file are as follows:
 * description - A string containing a description of the area
 * servername - The machine name of the server that responds to the requests
 * serverport - The TCP port that the server is listening on
-* layernames - An array of strings representing the names of the layers that requests should be made for
+* layernames - An array of strings representing the names of the layers that requests should be made for. If there is more than one layer, then a request for each layer will be made for each tile
 * stylename - The name of the styles to be used
 * format - The MIME type of the raster image that should be returned
 * tilematrixset - The name of the coordinate system used in the request

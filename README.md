@@ -16,7 +16,7 @@ node tilecacher.js -c config.json
 
 ## Configuration
 
-The client uses a file containing a JSON description of what area requests should be made for (which is referred to using the '-c' command line argument). The format of the file is something like this:
+The client uses a file containing a JSON description of each area you wish to make requests for (and therefore cache). The name of the file is referred to using the '-c' command line argument. The format of the file is like this:
 
 ```json
 {

@@ -93,8 +93,8 @@ The parameters in the file are as follows:
 * stylename - The name of the styles to be used
 * format - The MIME type of the raster image that should be returned
 * tilematrixset - The name of the coordinate system used in the request
-* startzoomlevel - The topmost zoom level to use
-* stopzoomlevel - The lowermost zoom level to use
+* startzoomlevel - The topmost zoom level to use e.g. 0
+* stopzoomlevel - The lowermost zoom level to use e.g. 20
 * bounds - An object containing the bottom left and top right coordinates of the area (in lat/lons aka EPSG4326)
 
 Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset. The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.

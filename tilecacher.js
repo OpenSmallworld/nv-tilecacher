@@ -28,7 +28,7 @@ if (options.help || !options.configfile) {
 var configFileName = options.configfile;
 var config;
 
-// The default number of workers is 10. This can be overridden using the -w parameter.
+// The default number of async queue workers is 10. This can be overridden using the -w parameter.
 var numWorkers = (options.workers) ? options.workers : 10;
 
 var countOnly = options.countonly;
@@ -44,6 +44,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 		
 		console.log(cacheArea);
 		
+		// The requests are WMTS calls - here we set up the common preamble.
 		var requestHeader = "/maps?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&STYLE=" + cacheArea.stylename + 
 			"&FORMAT=" + cacheArea.format + "&TILEMATRIXSET=" + cacheArea.tilematrixset;
 		
@@ -64,13 +65,18 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 		if (!countOnly) {
 			console.log("Starting requests...");
 			
-			// Define the interval that progress is reported on. Typically will be 1000 calls, but if the 
-			// total is less than 1000, it will be the size of the total requests.
+			// Define the interval that progress is reported on. If not defined on the command line it will be every 1000 requests
+			// or the size of the total requests, whichever is smaller.
 			if (!reportInterval) reportInterval = Math.min(1000, tilesToDo);
 			
 			var startTime = (new Date).getTime();
 			
 			function makeRequest(task, callback) {
+				//
+				// This is a callback function that makes an HTTP request for a specific tile based on the 
+				// supplied task parameters. It is called as an async queue worker i.e. it processes a number
+				// of tasks placed on the queue.
+				//
 				var req = http.request({
 					host: task.servername,
 					path: task.layerTileUrl,
@@ -102,6 +108,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 			
 			// Actually request the tiles.
 			for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
+				// Add the rest of the WMTS parameters based on zoom level and row/col numbers.
 				var url = requestHeader + "&TILEMATRIX=" + zoom;
 
 				var tiles = getTileNumbers(zoom, cacheArea.bounds);
@@ -112,6 +119,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 						
 						for (var index = 0; index < cacheArea.layernames.length; index++) {
 							var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + cacheArea.layernames[index]);
+							// Push a new tasks onto the async queue for the worker(s) to process.
 							q.push({ 
 								servername: cacheArea.servername,
 								serverport: cacheArea.serverport,

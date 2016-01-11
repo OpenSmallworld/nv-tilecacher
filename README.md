@@ -87,8 +87,8 @@ The configuration file can contain multiple areas to request tiles for by adding
 
 The parameters in the file are as follows:
 * description - A string containing a description of the area
-* servername - The machine name of the server that responds to the requests
-* serverport - The TCP port that the server is listening on
+* servername - The machine name of the server that responds to the requests. This should be the same machinename that is being used for the Network Viewer URL.
+* serverport - The TCP port that the server is listening on. This should be the same port that the Network Viewer app is using.
 * layernames - An array of strings representing the names of the layers that requests should be made for. If there is more than one layer, then a request for each layer will be made for each tile
 * stylename - The name of the styles to be used
 * format - The MIME type of the raster image that should be returned
@@ -98,6 +98,8 @@ The parameters in the file are as follows:
 * bounds - An object containing the bottom left and top right coordinates of the area (in EPSG:4326 decimal degree coordinates aka "lat/lons")
 
 Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset. The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.
+
+In Network Viewer WMTS requests are handled in the first instance by a nodejs server. That server will be using a machinename and a port number that will also be used for the application running in the browser. It is this machinename and port number you should use in the configuration files. It will allow the tilecacher to construct WMTS requests that match what a Network Viewer client would construct when fetching raster tiles in a view.
 
 ## Command Line Options
 

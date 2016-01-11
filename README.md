@@ -99,7 +99,7 @@ The parameters in the file are as follows:
 
 Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset. The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.
 
-In Network Viewer WMTS requests are handled in the first instance by a nodejs server. That server will be using a machinename and a port number that will also be used for the application running in the browser. It is this machinename and port number you should use in the configuration files. It will allow the tilecacher to construct WMTS requests that match what a Network Viewer client would construct when fetching raster tiles in a view.
+In Network Viewer WMTS requests are handled in the first instance by a nodejs server. That server will be using a machinename and a port number that will also be used for the application running in the browser. It is this machinename and port number you should use in the configuration files. It will allow the tilecacher to construct WMTS requests that match what a Network Viewer client would construct when fetching raster tiles in a view (and cached if needed).
 
 ## Command Line Options
 

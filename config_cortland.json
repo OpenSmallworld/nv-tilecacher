@@ -1,0 +1,21 @@
+{
+	"cacheareas": [
+		{
+			"description": "Cortland, NY, USA",
+			"servername": "localhost",
+			"serverport": 80,
+			"layernames": ["Distribution", "Transmission"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 0,
+			"stopzoomlevel": 20,
+			"bounds": {
+				"minx": -76.287775,
+				"miny": 42.57343,
+				"maxx": -76.125898,
+				"maxy": 42.639166
+			}
+		}
+	]
+}

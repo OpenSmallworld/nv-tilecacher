@@ -115,7 +115,7 @@ Options
  
 ### Notes on command line options
  
-The number of workers affects the number of requests that will be generated - in general more workers, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to provide a socket for the request to connect to. If you are seeing connection errors after a while, try restarting with a lower worker number.
+The number of workers affects the number of requests that will be generated - in general more workers, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to provide a socket for the request to connect to. If you are seeing connection errors after a while or "socket hang up" errors (indicating that the request load has possibly caused the server to crash), try restarting with a lower worker number.
 
 ## Output
 

@@ -16,7 +16,8 @@ var cli = commandLineArgs([
 	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of workers (default 10)'},
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
 	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The reporting interval for progress (integer)'},
-	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'}
+	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'},
+	{ name: 'verbose', alias: 'v', type: Boolean, description: 'Output information verbosely'}
 ])
 
 var options = cli.parse();
@@ -35,6 +36,8 @@ var numWorkers = (options.workers) ? options.workers : 10;
 var countOnly = options.countonly;
 
 var reportInterval = options.reportinterval;
+
+var outputverbose = (options.verbose) ? options.verbose : false;
 
 // By default the http connections will use the Nodejs HTTP connection pool.
 var useconnectionpooling = (options.connectionpooling) ? options.connectionpooling : false; 
@@ -90,6 +93,10 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 				
 				if (!useconnectionpooling) {
 					options.agent = false;
+				}
+				
+				if (outputverbose) {
+					console.log("Requesting: http://" + task.servername + ":" + task.serverport + task.layerTileUrl);
 				}
 				
 				var req = http.request(options, function(response) {

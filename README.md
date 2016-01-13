@@ -112,6 +112,7 @@ Options
   -o, --countonly               Whether to only count tiles or not -true or false (default false)
   -r, --reportinterval number   The reporting interval for progress (integer)
   -p, --connectionpooling       Use connection pooling
+  -v, --verbose                 Output information verbosely
  ```
  
 ### Notes on command line options

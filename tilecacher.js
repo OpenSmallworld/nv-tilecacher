@@ -81,25 +81,17 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 				// supplied task parameters. It is called as an async queue worker i.e. it processes a number
 				// of tasks placed on the queue.
 				//
-				var options;
+				var options = {
+						host: task.servername,
+						path: task.layerTileUrl,
+						port: task.serverport,
+						method: 'GET'
+				};
 				
-				if (useconnectionpooling) {
-					options = {
-						host: task.servername,
-						path: task.layerTileUrl,
-						port: task.serverport,
-						method: 'GET'
-					}
+				if (!useconnectionpooling) {
+					options.agent = false;
 				}
-				else {
-					options = {
-						host: task.servername,
-						path: task.layerTileUrl,
-						port: task.serverport,
-						agent: false,
-						method: 'GET'
-					}
-				}
+				
 				var req = http.request(options, function(response) {
 					var currentTime = (new Date).getTime();
 					var elapsedTime = (currentTime - startTime) / 1000;

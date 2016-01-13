@@ -2,7 +2,7 @@
 	"cacheareas": [
 		{
 			"description": "Cortland, NY, USA",
-			"servername": "localhost",
+			"servername": "127.0.0.1",
 			"serverport": 80,
 			"layernames": ["Distribution", "Transmission"],
 			"stylename": "",

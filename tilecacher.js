@@ -15,7 +15,8 @@ var cli = commandLineArgs([
 	{ name: 'help', alias: 'h', description: 'Display usage' },
 	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of workers (default 10)'},
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
-	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The reporting interval for progress (integer)'}
+	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The reporting interval for progress (integer)'},
+	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'}
 ])
 
 var options = cli.parse();
@@ -34,6 +35,9 @@ var numWorkers = (options.workers) ? options.workers : 10;
 var countOnly = options.countonly;
 
 var reportInterval = options.reportinterval;
+
+// By default the http connections will use the Nodejs HTTP connection pool.
+var useconnectionpooling = (options.connectionpooling) ? options.connectionpooling : false; 
 
 fs.readFile(configFileName, 'utf8', function(err, data) {
 	if (err) throw err;
@@ -77,12 +81,26 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 				// supplied task parameters. It is called as an async queue worker i.e. it processes a number
 				// of tasks placed on the queue.
 				//
-				var req = http.request({
-					host: task.servername,
-					path: task.layerTileUrl,
-					port: task.serverport,
-					method: 'GET'
-				}, function(response) {
+				var options;
+				
+				if (useconnectionpooling) {
+					options = {
+						host: task.servername,
+						path: task.layerTileUrl,
+						port: task.serverport,
+						method: 'GET'
+					}
+				}
+				else {
+					options = {
+						host: task.servername,
+						path: task.layerTileUrl,
+						port: task.serverport,
+						agent: false,
+						method: 'GET'
+					}
+				}
+				var req = http.request(options, function(response) {
 					var currentTime = (new Date).getTime();
 					var elapsedTime = (currentTime - startTime) / 1000;
 					

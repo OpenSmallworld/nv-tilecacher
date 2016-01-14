@@ -46,6 +46,50 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 	if (err) throw err;
 	config = JSON.parse(data);
 	
+	function makeRequest(task, callback) {
+		//
+		// This is a callback function that makes an HTTP request for a specific tile based on the 
+		// supplied task parameters. It is called as an async queue worker i.e. it processes a number
+		// of tasks placed on the queue.
+		//
+		var options = {
+				host: task.servername,
+				path: task.layerTileUrl,
+				port: task.serverport,
+				method: 'GET'
+		};
+		
+		if (!useconnectionpooling) {
+			options.agent = false;
+		}
+		
+		if (outputverbose) {
+			console.log("Requesting: http://" + task.servername + ":" + task.serverport + task.layerTileUrl);
+		}
+		
+		var req = http.request(options, function(response) {
+			var currentTime = (new Date).getTime();
+			var elapsedTime = (currentTime - startTime) / 1000;
+			
+			tilesDone++;
+			var rate = tilesDone / elapsedTime;
+			var remainingTiles = tilesToDo - tilesDone;
+			var etc = (remainingTiles / rate) / (60 * 60);
+			
+			if (tilesDone % reportInterval == 0) {
+				console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
+					remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
+			}
+			callback();
+		});
+		req.on('error', function(e) {
+			console.log("Error: " + e.message);
+			callback(e);
+		});
+		req.end();
+	}
+	var q = async.queue(makeRequest, numWorkers);
+	
 	for (var i = 0; i < config.cacheareas.length; i++) {
 		var cacheArea = config.cacheareas[i];
 		
@@ -77,51 +121,6 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 			if (!reportInterval) reportInterval = Math.min(1000, tilesToDo);
 			
 			var startTime = (new Date).getTime();
-			
-			function makeRequest(task, callback) {
-				//
-				// This is a callback function that makes an HTTP request for a specific tile based on the 
-				// supplied task parameters. It is called as an async queue worker i.e. it processes a number
-				// of tasks placed on the queue.
-				//
-				var options = {
-						host: task.servername,
-						path: task.layerTileUrl,
-						port: task.serverport,
-						method: 'GET'
-				};
-				
-				if (!useconnectionpooling) {
-					options.agent = false;
-				}
-				
-				if (outputverbose) {
-					console.log("Requesting: http://" + task.servername + ":" + task.serverport + task.layerTileUrl);
-				}
-				
-				var req = http.request(options, function(response) {
-					var currentTime = (new Date).getTime();
-					var elapsedTime = (currentTime - startTime) / 1000;
-					
-					tilesDone++;
-					var rate = tilesDone / elapsedTime;
-					var remainingTiles = tilesToDo - tilesDone;
-					var etc = (remainingTiles / rate) / (60 * 60);
-					
-					if (tilesDone % reportInterval == 0) {
-						console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
-							remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
-					}
-					callback();
-				});
-				req.on('error', function(e) {
-					console.log("Error: " + e.message);
-					callback(e);
-				});
-				req.end();
-			}
-			
-			var q = async.queue(makeRequest, numWorkers);
 			
 			// Actually request the tiles.
 			for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {

@@ -82,12 +82,15 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 			}
 			callback();
 		});
+		
 		req.on('error', function(e) {
 			console.log("Error: " + e.message);
 			callback(e);
 		});
+		
 		req.end();
 	}
+	
 	var q = async.queue(makeRequest, numWorkers);
 	
 	for (var i = 0; i < config.cacheareas.length; i++) {
@@ -128,7 +131,9 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 				var url = requestHeader + "&TILEMATRIX=" + zoom;
 
 				var tiles = getTileNumbers(zoom, cacheArea.bounds);
-				//console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
+				if (outputverbose) {
+				 console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
+				}
 				for (var x = tiles[0]; x <= tiles[2]; x++) {
 					for (var y = tiles[1]; y <= tiles[3]; y++) {
 						var tileUrl = url + "&TILECOL=" + x + "&TILEROW=" + y;
@@ -140,7 +145,8 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 								servername: cacheArea.servername,
 								serverport: cacheArea.serverport,
 								layerTileUrl: layerTileUrl
-							}, function(err) {
+							}, function asyncCallback(err) {
+								// Callback function used when task has completed. We have nothing to do here, so do nothing.
 							});
 						}
 					}

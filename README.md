@@ -86,7 +86,7 @@ The configuration file can contain multiple areas to request tiles for by adding
 ```
 
 The parameters in the file are as follows:
-* description - A string containing a description of the area
+* **description** - A string containing a description of the area
 * servername - The machine name of the server that responds to the requests. This should be the same machinename that is being used for the Network Viewer URL.
 * serverport - The TCP port that the server is listening on. This should be the same port that the Network Viewer app is using.
 * layernames - An array of strings representing the names of the layers that requests should be made for. If there is more than one layer, then a request for each layer will be made for each tile

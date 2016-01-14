@@ -87,15 +87,15 @@ The configuration file can contain multiple areas to request tiles for by adding
 
 The parameters in the file are as follows:
 * **description** - A string containing a description of the area
-* servername - The machine name of the server that responds to the requests. This should be the same machinename that is being used for the Network Viewer URL.
-* serverport - The TCP port that the server is listening on. This should be the same port that the Network Viewer app is using.
-* layernames - An array of strings representing the names of the layers that requests should be made for. If there is more than one layer, then a request for each layer will be made for each tile
-* stylename - The name of the styles to be used
-* format - The MIME type of the raster image that should be returned
-* tilematrixset - The name of the coordinate system used in the request
-* startzoomlevel - The topmost zoom level to use e.g. 0
-* stopzoomlevel - The lowermost zoom level to use e.g. 20
-* bounds - An object containing the bottom left and top right coordinates of the area (in EPSG:4326 decimal degree coordinates aka "lat/lons")
+* **servername** - The machine name of the server that responds to the requests. This should be the same machinename that is being used for the Network Viewer URL.
+* **serverport** - The TCP port that the server is listening on. This should be the same port that the Network Viewer app is using.
+* **layernames** - An array of strings representing the names of the layers that requests should be made for. If there is more than one layer, then a request for each layer will be made for each tile
+* **stylename** - The name of the styles to be used
+* **format** - The MIME type of the raster image that should be returned
+* **tilematrixset** - The name of the coordinate system used in the request
+* **startzoomlevel** - The topmost zoom level to use e.g. 0
+* **stopzoomlevel** - The lowermost zoom level to use e.g. 20
+* **bounds** - An object containing the bottom left and top right coordinates of the area (in EPSG:4326 decimal degree coordinates aka "lat/lons")
 
 Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset. The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.
 

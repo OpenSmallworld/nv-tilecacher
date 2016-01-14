@@ -5,8 +5,8 @@ A nodejs client that generates WMTS requests for map tiles from Network Viewer b
 ## To install and run:
 * Install [Nodejs](https://nodejs.org/en/)
 * Install dependencies:
-  * npm install async
-  * npm install command-line-args
+  * npm install [async](https://github.com/caolan/async)
+  * npm install [command-line-args](https://www.npmjs.com/package/command-line-args)
   
 Place a copy of tilecacher.js and a config.json file in a directory and then run the cacher:
 

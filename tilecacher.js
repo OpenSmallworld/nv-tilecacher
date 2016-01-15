@@ -17,7 +17,8 @@ var cli = commandLineArgs([
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
 	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The reporting interval for progress (integer)'},
 	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'},
-	{ name: 'verbose', alias: 'v', type: Boolean, description: 'Output information verbosely'}
+	{ name: 'verbose', alias: 'v', type: Boolean, description: 'Output information verbosely'},
+	{ name: 'sockettimeout', alias: 's', type: Number, defaultOption: 120, description: 'The timeout period for the socket connection in seconds (default 120)'}
 ])
 
 var options = cli.parse();
@@ -38,6 +39,8 @@ var countOnly = options.countonly;
 var reportInterval = options.reportinterval;
 
 var outputverbose = (options.verbose) ? options.verbose : false;
+
+var socketTimeout = (options.sockettimeout) ? options.sockettimeout : 120;
 
 // By default the http connections will use the Nodejs HTTP connection pool.
 var useconnectionpooling = (options.connectionpooling) ? options.connectionpooling : false; 
@@ -80,11 +83,16 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 				console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
 					remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
 			}
+			
 			callback();
 		});
 		
+		req.setTimeout(socketTimeout * 1000, function socketTimeout() {
+			console.log("Socket timeout occurred for: " + task.layerTileUrl);
+		})
+		
 		req.on('error', function(e) {
-			console.log("Error: " + e.message);
+			console.log("Error: " + e.message + " : request " + task.layerTileUrl);
 			callback(e);
 		});
 		

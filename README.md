@@ -113,6 +113,7 @@ Options
   -r, --reportinterval number   The reporting interval for progress (integer)
   -p, --connectionpooling       Use connection pooling
   -v, --verbose                 Output information verbosely
+  -s, --sockettimeout number    The timeout period for the socket connection in seconds (default 120)
  ```
  
 ### Notes on command line options

@@ -15,7 +15,7 @@ var cli = commandLineArgs([
 	{ name: 'help', alias: 'h', description: 'Display usage' },
 	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of workers (default 10)'},
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
-	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The reporting interval for progress (integer)'},
+	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The number of requests that progress is reported on e.g. every 100 requests, 1000 requests etc'},
 	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'},
 	{ name: 'verbose', alias: 'v', type: Boolean, description: 'Output information verbosely'},
 	{ name: 'sockettimeout', alias: 's', type: Number, defaultOption: 120, description: 'The timeout period for the socket connection in seconds (default 120)'}
@@ -51,7 +51,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 	
 	function makeRequest(task, callback) {
 		//
-		// This is a callback function that makes an HTTP request for a specific tile based on the 
+		// This is the worker function that makes an HTTP request for a specific tile based on the 
 		// supplied task parameters. It is called as an async queue worker i.e. it processes a number
 		// of tasks placed on the queue.
 		//
@@ -71,6 +71,9 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 		}
 		
 		var req = http.request(options, function(response) {
+			response.on('data', function(chunk){
+				// Grab the response data i.e. the image but don't do anything with it.
+			});
 			var currentTime = (new Date).getTime();
 			var elapsedTime = (currentTime - startTime) / 1000;
 			
@@ -89,6 +92,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 		
 		req.setTimeout(socketTimeout * 1000, function socketTimeout() {
 			console.log("Socket timeout occurred for: " + task.layerTileUrl);
+			callback("Socket timeout");
 		})
 		
 		req.on('error', function(e) {
@@ -153,8 +157,6 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 								servername: cacheArea.servername,
 								serverport: cacheArea.serverport,
 								layerTileUrl: layerTileUrl
-							}, function asyncCallback(err) {
-								// Callback function used when task has completed. We have nothing to do here, so do nothing.
 							});
 						}
 					}

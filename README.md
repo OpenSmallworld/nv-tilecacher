@@ -110,7 +110,8 @@ Options
   -h, --help                    Display usage
   -w, --workers number          Number of workers (default 10)
   -o, --countonly               Whether to only count tiles or not -true or false (default false)
-  -r, --reportinterval number   The reporting interval for progress (integer)
+  -r, --reportinterval number   The number of requests that progress is reported on e.g. every 100 requests,
+                                1000 requests etc
   -p, --connectionpooling       Use connection pooling
   -v, --verbose                 Output information verbosely
   -s, --sockettimeout number    The timeout period for the socket connection in seconds (default 120)

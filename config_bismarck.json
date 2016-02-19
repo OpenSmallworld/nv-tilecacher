@@ -1,7 +1,7 @@
 {
 	"cacheareas": [
 		{
-			"description": "Mid West, USA",
+			"description": "Bismarck, ND, USA",
 			"servername": "127.0.0.1",
 			"serverport": 80,
 			"layernames": ["Distribution", "Layer2", "Layer3", "Layer4", "Layer5"],
@@ -11,10 +11,10 @@
 			"startzoomlevel": 10,
 			"stopzoomlevel": 21,
 			"bounds": {
-				"minx": -112.719727,
-				"miny": 32.694866,
-				"maxx": -84.418945,
-				"maxy": 45.213004
+				"minx": -100.912338,
+				"miny": 44.863129,
+				"maxx": -100.659653,
+				"maxy": 46.707032
 			}
 		}
 	]

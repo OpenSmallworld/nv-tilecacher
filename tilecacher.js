@@ -79,7 +79,7 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 			
 			tilesDone++;
 			var rate = tilesDone / elapsedTime;
-			var remainingTiles = tilesToDo - tilesDone;
+			var remainingTiles = totalTiles - tilesDone;
 			var etc = (remainingTiles / rate) / (60 * 60);
 			
 			if (tilesDone % reportInterval == 0) {
@@ -105,6 +105,8 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 	
 	var q = async.queue(makeRequest, numWorkers);
 	
+	var totalTiles = 0;
+	
 	for (var i = 0; i < config.cacheareas.length; i++) {
 		var cacheArea = config.cacheareas[i];
 		
@@ -126,14 +128,17 @@ fs.readFile(configFileName, 'utf8', function(err, data) {
 			tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * cacheArea.layernames.length;
 		}
 		
-		console.log("Number of tiles to request = " + tilesToDo);
+		totalTiles += tilesToDo;
+		
+		console.log("Number of tiles to request for this area = " + tilesToDo);
+		console.log("Total number of tiles for this configuration = " + totalTiles);
 		
 		if (!countOnly) {
 			console.log("Starting requests...");
 			
 			// Define the interval that progress is reported on. If not defined on the command line it will be every 1000 requests
 			// or the size of the total requests, whichever is smaller.
-			if (!reportInterval) reportInterval = Math.min(1000, tilesToDo);
+			if (!reportInterval) reportInterval = Math.min(1000, totalTiles);
 			
 			var startTime = (new Date).getTime();
 			

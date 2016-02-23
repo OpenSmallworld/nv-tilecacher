@@ -107,6 +107,8 @@ In Network Viewer WMTS requests are handled in the first instance by a nodejs se
 Options
 
   -c, --configfile string       The name of a JSON file containing the caching definitions
+  -d, --configdir string        A directory that contains a set of JSON config files. Use instead of -c for
+                                multiple configs
   -h, --help                    Display usage
   -w, --workers number          Number of workers (default 10)
   -o, --countonly               Whether to only count tiles or not -true or false (default false)
@@ -114,6 +116,7 @@ Options
                                 1000 requests etc
   -p, --connectionpooling       Use connection pooling
   -v, --verbose                 Output information verbosely
+  -b, --verboserequests         Output request information verbosely
   -s, --sockettimeout number    The timeout period for the socket connection in seconds (default 120)
  ```
  

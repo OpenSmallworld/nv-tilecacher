@@ -12,7 +12,7 @@ const usageOptions = {
 }
 var cli = commandLineArgs([
 	{ name: 'configfile', alias: 'c', type: String, description: 'The name of a JSON file containing the caching definitions' },
-	{ name: 'configdir', alias: 'd', type: String, description: 'A directory that contains a set of JSON config files' },
+	{ name: 'configdir', alias: 'd', type: String, description: 'A directory that contains a set of JSON config files. Use instead of -c for multiple configs' },
 	{ name: 'help', alias: 'h', description: 'Display usage' },
 	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of workers (default 10)'},
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},

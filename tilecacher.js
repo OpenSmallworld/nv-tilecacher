@@ -12,24 +12,28 @@ const usageOptions = {
 }
 var cli = commandLineArgs([
 	{ name: 'configfile', alias: 'c', type: String, description: 'The name of a JSON file containing the caching definitions' },
+	{ name: 'configdir', alias: 'd', type: String, description: 'A directory that contains a set of JSON config files' },
 	{ name: 'help', alias: 'h', description: 'Display usage' },
 	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of workers (default 10)'},
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
 	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The number of requests that progress is reported on e.g. every 100 requests, 1000 requests etc'},
 	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'},
 	{ name: 'verbose', alias: 'v', type: Boolean, description: 'Output information verbosely'},
+	{ name: 'verboserequests', alias: 'b', type: Boolean, description: 'Output request information verbosely'},
 	{ name: 'sockettimeout', alias: 's', type: Number, defaultOption: 120, description: 'The timeout period for the socket connection in seconds (default 120)'}
 ])
 
 var options = cli.parse();
 
-if (options.help || !options.configfile) {
+if (options.help) {
 	console.log(cli.getUsage(options, usageOptions));
 	return;
 }
 
 var configFileName = options.configfile;
 var config;
+
+var configDir = options.configdir;
 
 // The default number of async queue workers is 10. This can be overridden using the -w parameter.
 var numWorkers = (options.workers) ? options.workers : 10;
@@ -40,136 +44,170 @@ var reportInterval = options.reportinterval;
 
 var outputverbose = (options.verbose) ? options.verbose : false;
 
+var verboserequests = (options.verboserequests) ? options.verboserequests : false;
+
 var socketTimeout = (options.sockettimeout) ? options.sockettimeout : 120;
 
 // By default the http connections will use the Nodejs HTTP connection pool.
 var useconnectionpooling = (options.connectionpooling) ? options.connectionpooling : false; 
 
-fs.readFile(configFileName, 'utf8', function(err, data) {
-	if (err) throw err;
-	config = JSON.parse(data);
-	
-	function makeRequest(task, callback) {
-		//
-		// This is the worker function that makes an HTTP request for a specific tile based on the 
-		// supplied task parameters. It is called as an async queue worker i.e. it processes a number
-		// of tasks placed on the queue.
-		//
-		var options = {
-				host: task.servername,
-				path: task.layerTileUrl,
-				port: task.serverport,
-				method: 'GET'
-		};
-		
-		if (!useconnectionpooling) {
-			options.agent = false;
+if (configDir) {
+	fs.readdir(configDir, function(err, files) {
+		for (var i = 0; i <= files.length; i++) {
+			var fn = files[i];
+			//console.log(fn);
+			if (fn && fn.match(/.json/)) {
+				//console.log("Matched: " + fn);
+				processConfigFile(configDir + "\\" + fn);
+			}
 		}
+	})
+}
+else {
+	if (configFileName) {
+		processConfigFile(configFileName);
+	}
+}
+
+function processConfigFile(configFileName) {
+	fs.readFile(configFileName, 'utf8', function(err, data) {
+		if (err) throw err;
+		config = JSON.parse(data);
 		
-		if (outputverbose) {
-			console.log("Requesting: http://" + task.servername + ":" + task.serverport + task.layerTileUrl);
-		}
-		
-		var req = http.request(options, function(response) {
-			response.on('data', function(chunk){
-				// Grab the response data i.e. the image but don't do anything with it.
-			});
-			var currentTime = (new Date).getTime();
-			var elapsedTime = (currentTime - startTime) / 1000;
+		function makeRequest(task, callback) {
+			//
+			// This is the worker function that makes an HTTP request for a specific tile based on the 
+			// supplied task parameters. It is called as an async queue worker i.e. it processes a number
+			// of tasks placed on the queue.
+			//
+			var options = {
+					host: task.servername,
+					path: task.layerTileUrl,
+					port: task.serverport,
+					method: 'GET'
+			};
 			
-			tilesDone++;
-			var rate = tilesDone / elapsedTime;
-			var remainingTiles = totalTiles - tilesDone;
-			var etc = (remainingTiles / rate) / (60 * 60);
-			
-			if (tilesDone % reportInterval == 0) {
-				console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
-					remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
+			if (!useconnectionpooling) {
+				options.agent = false;
 			}
 			
-			callback();
-		});
-		
-		req.setTimeout(socketTimeout * 1000, function socketTimeout() {
-			console.log("Socket timeout occurred for: " + task.layerTileUrl);
-			callback("Socket timeout");
-		})
-		
-		req.on('error', function(e) {
-			console.log("Error: " + e.message + " : request " + task.layerTileUrl);
-			callback(e);
-		});
-		
-		req.end();
-	}
-	
-	var q = async.queue(makeRequest, numWorkers);
-	
-	var totalTiles = 0;
-	
-	for (var i = 0; i < config.cacheareas.length; i++) {
-		var cacheArea = config.cacheareas[i];
-		
-		console.log(cacheArea);
-		
-		// The requests are WMTS calls - here we set up the common preamble.
-		var requestHeader = "/maps?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&STYLE=" + cacheArea.stylename + 
-			"&FORMAT=" + cacheArea.format + "&TILEMATRIXSET=" + cacheArea.tilematrixset;
-		
-		var tilesToDo = 0;
-		var tilesDone = 0;
-		
-		console.log("Calculating number of tiles...");
-		
-		// Count the number of tiles that will be requested.
-		for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
-			var tiles = getTileNumbers(zoom, cacheArea.bounds);
+			if (verboserequests) {
+				console.log("Requesting: http://" + task.servername + ":" + task.serverport + task.layerTileUrl);
+			}
 			
-			tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * cacheArea.layernames.length;
+			var req = http.request(options, function(response) {
+				response.on('data', function(chunk){
+					// Grab the response data i.e. the image but don't do anything with it.
+				});
+				var currentTime = (new Date).getTime();
+				var elapsedTime = (currentTime - startTime) / 1000;
+				
+				tilesDone++;
+				var rate = tilesDone / elapsedTime;
+				var remainingTiles = totalTiles - tilesDone;
+				var etc = (remainingTiles / rate) / (60 * 60);
+				
+				if (outputverbose) {
+					if (tilesDone % reportInterval == 0) {
+						console.log("Tiles done = " + tilesDone + ", rate = " + rate + " requests/second (" + 
+							remainingTiles + " left, elapsed time = " + elapsedTime + " seconds, ETC = " + etc + " hours)");
+					}
+				}
+				
+				callback();
+			});
+			
+			req.setTimeout(socketTimeout * 1000, function socketTimeout() {
+				console.log("Socket timeout occurred for: " + task.layerTileUrl);
+				callback("Socket timeout");
+			})
+			
+			req.on('error', function(e) {
+				console.log("Error: " + e.message + " : request " + task.layerTileUrl);
+				callback(e);
+			});
+			
+			req.end();
 		}
 		
-		totalTiles += tilesToDo;
+		var q = async.queue(makeRequest, numWorkers);
 		
-		console.log("Number of tiles to request for this area = " + tilesToDo);
-		console.log("Total number of tiles for this configuration = " + totalTiles);
+		var totalTiles = 0;
 		
-		if (!countOnly) {
-			console.log("Starting requests...");
+		for (var i = 0; i < config.cacheareas.length; i++) {
+			var cacheArea = config.cacheareas[i];
 			
-			// Define the interval that progress is reported on. If not defined on the command line it will be every 1000 requests
-			// or the size of the total requests, whichever is smaller.
-			if (!reportInterval) reportInterval = Math.min(1000, totalTiles);
+			if (outputverbose) {
+				console.log(cacheArea);
+			}
 			
-			var startTime = (new Date).getTime();
+			// The requests are WMTS calls - here we set up the common preamble.
+			var requestHeader = "/maps?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&STYLE=" + cacheArea.stylename + 
+				"&FORMAT=" + cacheArea.format + "&TILEMATRIXSET=" + cacheArea.tilematrixset;
 			
-			// Actually request the tiles.
+			var tilesToDo = 0;
+			var tilesDone = 0;
+			
+			if (outputverbose) {
+				console.log("Calculating number of tiles...");
+			}
+			
+			// Count the number of tiles that will be requested.
 			for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
-				// Add the rest of the WMTS parameters based on zoom level and row/col numbers.
-				var url = requestHeader + "&TILEMATRIX=" + zoom;
-
 				var tiles = getTileNumbers(zoom, cacheArea.bounds);
+				
+				tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * cacheArea.layernames.length;
+			}
+			
+			totalTiles += tilesToDo;
+			
+			if (outputverbose) {
+				console.log("Number of tiles to request for this area = " + tilesToDo);
+				console.log("Total number of tiles for this configuration = " + totalTiles);
+			}
+			
+			if (!countOnly) {
 				if (outputverbose) {
-				 console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
+					console.log("Starting requests...");
 				}
-				for (var x = tiles[0]; x <= tiles[2]; x++) {
-					for (var y = tiles[1]; y <= tiles[3]; y++) {
-						var tileUrl = url + "&TILECOL=" + x + "&TILEROW=" + y;
-						
-						for (var index = 0; index < cacheArea.layernames.length; index++) {
-							var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + cacheArea.layernames[index]);
-							// Push a new tasks onto the async queue for the worker(s) to process.
-							q.push({ 
-								servername: cacheArea.servername,
-								serverport: cacheArea.serverport,
-								layerTileUrl: layerTileUrl
-							});
+				
+				// Define the interval that progress is reported on. If not defined on the command line it will be every 1000 requests
+				// or the size of the total requests, whichever is smaller.
+				if (!reportInterval) reportInterval = Math.min(1000, totalTiles);
+				
+				var startTime = (new Date).getTime();
+				
+				// Actually request the tiles.
+				for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
+					// Add the rest of the WMTS parameters based on zoom level and row/col numbers.
+					var url = requestHeader + "&TILEMATRIX=" + zoom;
+
+					var tiles = getTileNumbers(zoom, cacheArea.bounds);
+					/* if (outputverbose) {
+					 console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
+					} */
+					for (var x = tiles[0]; x <= tiles[2]; x++) {
+						for (var y = tiles[1]; y <= tiles[3]; y++) {
+							var tileUrl = url + "&TILECOL=" + x + "&TILEROW=" + y;
+							
+							for (var index = 0; index < cacheArea.layernames.length; index++) {
+								var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + cacheArea.layernames[index]);
+								// Push a new tasks onto the async queue for the worker(s) to process.
+								q.push({ 
+									servername: cacheArea.servername,
+									serverport: cacheArea.serverport,
+									layerTileUrl: layerTileUrl
+								});
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-})
+
+		console.log(configFileName + ", Grand tile total = " + totalTiles);
+	})
+}
 
 Math.radians = function(degrees) {
 	return degrees * Math.PI / 180;

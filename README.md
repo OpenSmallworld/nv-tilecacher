@@ -174,5 +174,5 @@ Depending on the server you are making calls to you may see errors. One type of 
 Error: socket hang up
 ```
 
-This indicates that the WMTS request that the tilecacher made was unexpectedly closed before the response to that request was made. It indicates a problem on the serverside i.e. an issue with the node reverse proxy, the JBoss instance (including the EIS servers) or possible the machine those processes are running on.
+This indicates that the WMTS request that the tilecacher made was unexpectedly closed before the response to that request was made. It indicates a problem on the serverside, most likely that the server is unable to respond quickly enough for whatever reason. There are a number of possible reasons for this i.e. an issue with the node reverse proxy, the JBoss instance (including the EIS servers) or possible the machine those processes are running on.
 

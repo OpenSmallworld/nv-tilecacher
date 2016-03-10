@@ -106,18 +106,23 @@ In Network Viewer WMTS requests are handled in the first instance by a nodejs se
 ```
 Options
 
-  -c, --configfile string       The name of a JSON file containing the caching definitions
-  -d, --configdir string        A directory that contains a set of JSON config files. Use instead of -c for
-                                multiple configs
-  -h, --help                    Display usage
-  -w, --workers number          Number of workers (default 10)
-  -o, --countonly               Whether to only count tiles or not -true or false (default false)
-  -r, --reportinterval number   The number of requests that progress is reported on e.g. every 100 requests,
-                                1000 requests etc
-  -p, --connectionpooling       Use connection pooling
-  -v, --verbose                 Output information verbosely
-  -b, --verboserequests         Output request information verbosely
-  -s, --sockettimeout number    The timeout period for the socket connection in seconds (default 120)
+  -c, --configfile string           The name of a JSON file containing the caching definitions
+  -d, --configdir string            A directory that contains a set of JSON config files. Use instead of -c for
+                                    multiple configs
+  -h, --help                        Display usage
+  -w, --workers number              Number of workers (default 10)
+  -o, --countonly                   Whether to only count tiles or not -true or false (default false)
+  -r, --reportinterval number       The number of requests that progress is reported on e.g. every 100 requests,
+                                    1000 requests etc
+  -p, --connectionpooling           Use connection pooling
+  -v, --verbose                     Output information verbosely
+  -b, --verboserequests             Output request information verbosely
+  -s, --sockettimeout number        The timeout period for the socket connection in seconds (default 120)
+  -i, --zoomstartoverride number    Override the zoom start value
+  -j, --zoomstopoverride number     Override the zoom stop value
+  -k, --servernameoverride string   Override the name of the server
+  -l, --serverportoverride number   Override the server port
+  -m, --layersoverride string       Override the layers
  ```
  
 ### Notes on command line options

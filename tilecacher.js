@@ -14,7 +14,7 @@ var cli = commandLineArgs([
 	{ name: 'configfile', alias: 'c', type: String, description: 'The name of a JSON file containing the caching definitions' },
 	{ name: 'configdir', alias: 'd', type: String, description: 'A directory that contains a set of JSON config files. Use instead of -c for multiple configs' },
 	{ name: 'help', alias: 'h', description: 'Display usage' },
-	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of workers (default 10)'},
+	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of simultaneous requests made at a time (default 10)'},
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
 	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The number of requests that progress is reported on e.g. every 100 requests, 1000 requests etc'},
 	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'},

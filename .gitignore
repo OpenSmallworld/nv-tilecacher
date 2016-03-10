@@ -9,3 +9,10 @@ config_mpls_beard_20.json
 config_mpls_beard_simple.json
 config_mpls_glen_prairie_20.json
 config_mpls_glen_prairie_simple.json
+*.7z
+complex.txt
+complex/
+simple/
+simple.txt
+*.xlsx
+usa.txt

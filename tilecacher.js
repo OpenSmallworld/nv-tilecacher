@@ -20,7 +20,12 @@ var cli = commandLineArgs([
 	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'},
 	{ name: 'verbose', alias: 'v', type: Boolean, description: 'Output information verbosely'},
 	{ name: 'verboserequests', alias: 'b', type: Boolean, description: 'Output request information verbosely'},
-	{ name: 'sockettimeout', alias: 's', type: Number, defaultOption: 120, description: 'The timeout period for the socket connection in seconds (default 120)'}
+	{ name: 'sockettimeout', alias: 's', type: Number, defaultOption: 120, description: 'The timeout period for the socket connection in seconds (default 120)'},
+	{ name: 'zoomstartoverride', alias: 'i', type: Number, description: 'Override the zoom start value'},
+	{ name: 'zoomstopoverride', alias: 'j', type: Number, description: 'Override the zoom stop value'},
+	{ name: 'servernameoverride', alias: 'k', type: String, description: 'Override the name of the server'},
+	{ name: 'serverportoverride', alias: 'l', type: Number, description: 'Override the server port'},
+	{ name: 'layersoverride', alias: 'm', type: String, description: 'Override the layers'}
 ])
 
 var options = cli.parse();
@@ -47,6 +52,21 @@ var outputverbose = (options.verbose) ? options.verbose : false;
 var verboserequests = (options.verboserequests) ? options.verboserequests : false;
 
 var socketTimeout = (options.sockettimeout) ? options.sockettimeout : 120;
+
+var zoomStartOverride = options.zoomstartoverride;
+var zoomStopOverride = options.zoomstopoverride;
+var serverNameOverride = options.servernameoverride;
+var serverPortOverride = options.serverportoverride;
+
+var layersOverride;
+
+if (typeof options.layersoverride != 'undefined') {
+	var l = options.layersoverride.replace('[', '["');
+	l = l.replace(']', '"]');
+	l = l.replace(/,/g, '","');
+	console.log("Overriding layers using " + l);
+	layersOverride = JSON.parse(l);
+}
 
 // By default the http connections will use the Nodejs HTTP connection pool.
 var useconnectionpooling = (options.connectionpooling) ? options.connectionpooling : false; 
@@ -144,6 +164,8 @@ function processConfigFile(configFileName) {
 			// The requests are WMTS calls - here we set up the common preamble.
 			var requestHeader = "/maps?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&STYLE=" + cacheArea.stylename + 
 				"&FORMAT=" + cacheArea.format + "&TILEMATRIXSET=" + cacheArea.tilematrixset;
+		        //var requestHeader = "/gssnative?service=ejb/MapLocal&method=getTile&style=" + cacheArea.stylename + 
+			//	"&format=" + cacheArea.format + "&tile_set=" + cacheArea.tilematrixset;
 			
 			var tilesToDo = 0;
 			var tilesDone = 0;
@@ -153,10 +175,19 @@ function processConfigFile(configFileName) {
 			}
 			
 			// Count the number of tiles that will be requested.
-			for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
+			var zoomstart = (typeof zoomStartOverride != 'undefined') ? zoomStartOverride : cacheArea.startzoomlevel;
+			var zoomstop = (typeof zoomStopOverride != 'undefined') ? zoomStopOverride : cacheArea.stopzoomlevel;
+			
+			if (outputverbose) {
+				console.log("Calculating from zoom level " + zoomstart + " to " + zoomstop);
+			}
+
+			var layernames = (typeof layersOverride != 'undefined') ? layersOverride : cacheArea.layernames;
+			
+			for (var zoom = zoomstart; zoom <= zoomstop; zoom++) {
 				var tiles = getTileNumbers(zoom, cacheArea.bounds);
 				
-				tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * cacheArea.layernames.length;
+				tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * layernames.length;
 			}
 			
 			totalTiles += tilesToDo;
@@ -176,26 +207,34 @@ function processConfigFile(configFileName) {
 				if (!reportInterval) reportInterval = Math.min(1000, totalTiles);
 				
 				var startTime = (new Date).getTime();
+
+				var servername = (typeof serverNameOverride != 'undefined') ? serverNameOverride : cacheArea.servername;
+				var serverport = (typeof serverPortOverride != 'undefined') ? serverPortOverride : cacheArea.serverport;			
 				
 				// Actually request the tiles.
-				for (var zoom = cacheArea.startzoomlevel; zoom <= cacheArea.stopzoomlevel; zoom++) {
+				for (var zoom = zoomstart; zoom <= zoomstop; zoom++) {
 					// Add the rest of the WMTS parameters based on zoom level and row/col numbers.
 					var url = requestHeader + "&TILEMATRIX=" + zoom;
+					//var url = requestHeader + "&zoom_level=" + zoom;
 
 					var tiles = getTileNumbers(zoom, cacheArea.bounds);
 					/* if (outputverbose) {
 					 console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
 					} */
+
+
 					for (var x = tiles[0]; x <= tiles[2]; x++) {
 						for (var y = tiles[1]; y <= tiles[3]; y++) {
 							var tileUrl = url + "&TILECOL=" + x + "&TILEROW=" + y;
+							//var tileUrl = url + "&tile_col=" + x + "&tile_row=" + y;
 							
-							for (var index = 0; index < cacheArea.layernames.length; index++) {
-								var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + cacheArea.layernames[index]);
+							for (var index = 0; index < layernames.length; index++) {
+								//var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + layernames[index]);
+								var layerTileUrl = encodeURI(tileUrl + "&layer=" + layernames[index]);
 								// Push a new tasks onto the async queue for the worker(s) to process.
 								q.push({ 
-									servername: cacheArea.servername,
-									serverport: cacheArea.serverport,
+									servername: servername,
+									serverport: serverport,
 									layerTileUrl: layerTileUrl
 								});
 							}

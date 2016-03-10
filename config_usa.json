@@ -1,0 +1,21 @@
+{
+	"cacheareas": [
+		{
+			"description": "USA",
+			"servername": "cbgswws05.nms.dev.ps.ge.com",
+			"serverport": 3200,
+			"layernames": ["Support", "Network"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 16,
+			"stopzoomlevel": 17,
+			"bounds": {
+				"minx": -125.244141,
+				"miny": 27.059126,
+				"maxx": -66.357422,
+				"maxy": 46.920255
+			}
+		}
+	]
+}

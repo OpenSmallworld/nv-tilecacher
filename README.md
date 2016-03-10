@@ -127,7 +127,9 @@ Options
  
 ### Notes on command line options
  
-The number of "workers"" affects the number of requests that will be generated simultaneously - in general the higher the value for this parameter, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to provide a socket for the request to connect to. If you are seeing connection errors after a while or "socket hang up" errors (indicating that the request load has possibly caused the server to crash), try restarting with a lower worker number.
+The number of "workers"" affects the number of requests that will be generated simultaneously - in general the higher the value for this parameter, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to respond to the request in a timeframe that is less than the timeout for the socket connection. If you are seeing "socket hang up" errors (indicating that the request load has possibly caused the server to crash or that the server simply can't respond quickly enough), try restarting with a lower worker number to throttle the request rate.
+
+Note that if you are seeing socket hang ups, it is an indication that the server possibly needs reconfiguration in order to boost its performance.
 
 Connection pooling is where the HTTP requests use a pool of sockets rather than creating their own socket from scratch every time. This has been know to cause problems (specifically ENOBUF errors) in situations where the tilecacher is generating requests so quickly that the socket connection pool is full. The connection pooling behaviour can be switched off and this is the default i.e. every HTTP request will generate a new socket. However the connection pooloing behaviour can be turned on using the -p option.
 

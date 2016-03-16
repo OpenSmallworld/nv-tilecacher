@@ -208,10 +208,6 @@ function processConfigFile(configFileName) {
 				var cacheArea = config.cacheareas[i];
 				// Actually make the requests instead of just adding up the number of tiles to do.
 				
-				if (outputverbose) {
-					console.log("Starting requests...");
-				}
-				
 				// Define the interval that progress is reported on. If not defined on the command line it will be every 1000 requests
 				// or the size of the total requests, whichever is smaller.
 				if (!reportInterval) reportInterval = Math.min(1000, totalTiles);

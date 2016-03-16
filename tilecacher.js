@@ -94,6 +94,12 @@ function processConfigFile(configFileName) {
 		if (err) throw err;
 		config = JSON.parse(data);
 		
+		// totalTiles represents the grand total of tiles to process for every cache area in the configuration file.
+		var totalTiles = 0;
+		// tilesToDo represents the total number of tiles to do for a particular cache area in the configuration file.
+		var tilesToDo;
+		var tilesDone;
+		
 		function makeRequest(task, callback) {
 			//
 			// This is the worker function that makes an HTTP request for a specific tile based on the 
@@ -152,8 +158,6 @@ function processConfigFile(configFileName) {
 		
 		var q = async.queue(makeRequest, numWorkers);
 		
-		var totalTiles = 0;
-		
 		for (var i = 0; i < config.cacheareas.length; i++) {
 			var cacheArea = config.cacheareas[i];
 			
@@ -164,11 +168,9 @@ function processConfigFile(configFileName) {
 			// The requests are WMTS calls - here we set up the common preamble.
 			var requestHeader = "/maps?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&STYLE=" + cacheArea.stylename + 
 				"&FORMAT=" + cacheArea.format + "&TILEMATRIXSET=" + cacheArea.tilematrixset;
-		        //var requestHeader = "/gssnative?service=ejb/MapLocal&method=getTile&style=" + cacheArea.stylename + 
-			//	"&format=" + cacheArea.format + "&tile_set=" + cacheArea.tilematrixset;
 			
-			var tilesToDo = 0;
-			var tilesDone = 0;
+			tilesToDo = 0;
+			tilesDone = 0;
 			
 			if (outputverbose) {
 				console.log("Calculating number of tiles...");
@@ -190,6 +192,7 @@ function processConfigFile(configFileName) {
 				tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * layernames.length;
 			}
 			
+			// The total number of tiles is the sum of all the tiles for each cache area.
 			totalTiles += tilesToDo;
 			
 			if (outputverbose) {
@@ -198,6 +201,8 @@ function processConfigFile(configFileName) {
 			}
 			
 			if (!countOnly) {
+				// Actually make the requests instead of just adding up the number of tiles to do.
+				
 				if (outputverbose) {
 					console.log("Starting requests...");
 				}
@@ -215,21 +220,17 @@ function processConfigFile(configFileName) {
 				for (var zoom = zoomstart; zoom <= zoomstop; zoom++) {
 					// Add the rest of the WMTS parameters based on zoom level and row/col numbers.
 					var url = requestHeader + "&TILEMATRIX=" + zoom;
-					//var url = requestHeader + "&zoom_level=" + zoom;
 
 					var tiles = getTileNumbers(zoom, cacheArea.bounds);
 					/* if (outputverbose) {
 					 console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
 					} */
 
-
 					for (var x = tiles[0]; x <= tiles[2]; x++) {
 						for (var y = tiles[1]; y <= tiles[3]; y++) {
 							var tileUrl = url + "&TILECOL=" + x + "&TILEROW=" + y;
-							//var tileUrl = url + "&tile_col=" + x + "&tile_row=" + y;
 							
 							for (var index = 0; index < layernames.length; index++) {
-								//var layerTileUrl = encodeURI(tileUrl + "&LAYER=" + layernames[index]);
 								var layerTileUrl = encodeURI(tileUrl + "&layer=" + layernames[index]);
 								// Push a new tasks onto the async queue for the worker(s) to process.
 								q.push({ 

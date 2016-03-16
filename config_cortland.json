@@ -2,14 +2,14 @@
 	"cacheareas": [
 		{
 			"description": "Cortland, NY, USA",
-			"servername": "http://ec2-50-19-107-52.compute-1.amazonaws.com/maps",
+			"servername": "ec2-50-19-107-52.compute-1.amazonaws.com",
 			"serverport": 80,
 			"layernames": ["Areas", "Design", "Distribution", "LV network", "MV network", "Transmission structures", "Transmission network" ],
 			"stylename": "",
 			"format": "image/png",
 			"tilematrixset": "EPSG-900913",
 			"startzoomlevel": 0,
-			"stopzoomlevel": 21,
+			"stopzoomlevel": 10,
 			"bounds": {
 				"minx": -76.219196,
 				"miny": 42.573310,

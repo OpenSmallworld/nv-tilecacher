@@ -184,12 +184,13 @@ function processConfigFile(configFileName) {
 				console.log("Calculating from zoom level " + zoomstart + " to " + zoomstop);
 			}
 
+			// The layer names may come from the configuration file or may be overridden at the command line.
 			var layernames = (typeof layersOverride != 'undefined') ? layersOverride : cacheArea.layernames;
 			
 			for (var zoom = zoomstart; zoom <= zoomstop; zoom++) {
 				var tiles = getTileNumbers(zoom, cacheArea.bounds);
-				
-				tilesToDo += (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]) * layernames.length;
+
+				tilesToDo += (tiles[2] - tiles[0] + 1) * (tiles[3] - tiles[1] + 1) * layernames.length;
 			}
 			
 			// The total number of tiles is the sum of all the tiles for each cache area.
@@ -197,10 +198,14 @@ function processConfigFile(configFileName) {
 			
 			if (outputverbose) {
 				console.log("Number of tiles to request for this area = " + tilesToDo);
-				console.log("Total number of tiles for this configuration = " + totalTiles);
 			}
+		}
+		
+		console.log(configFileName + ", Grand tile total = " + totalTiles);
 			
-			if (!countOnly) {
+		if (!countOnly) {
+			for (var i = 0; i < config.cacheareas.length; i++) {
+				var cacheArea = config.cacheareas[i];
 				// Actually make the requests instead of just adding up the number of tiles to do.
 				
 				if (outputverbose) {
@@ -244,8 +249,6 @@ function processConfigFile(configFileName) {
 				}
 			}
 		}
-
-		console.log(configFileName + ", Grand tile total = " + totalTiles);
 	})
 }
 

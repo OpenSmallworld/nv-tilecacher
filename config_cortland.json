@@ -1,20 +1,20 @@
 {
 	"cacheareas": [
 		{
-			"description": "Mid West, USA",
-			"servername": "127.0.0.1",
+			"description": "Cortland, NY, USA",
+			"servername": "http://ec2-50-19-107-52.compute-1.amazonaws.com/maps",
 			"serverport": 80,
-			"layernames": ["Distribution", "Layer2", "Layer3", "Layer4", "Layer5"],
+			"layernames": ["Areas", "Design", "Distribution", "LV network", "MV network", "Transmission structures", "Transmission network" ],
 			"stylename": "",
 			"format": "image/png",
 			"tilematrixset": "EPSG-900913",
-			"startzoomlevel": 10,
+			"startzoomlevel": 0,
 			"stopzoomlevel": 21,
 			"bounds": {
-				"minx": -112.719727,
-				"miny": 32.694866,
-				"maxx": -84.418945,
-				"maxy": 45.213004
+				"minx": -76.219196,
+				"miny": 42.573310,
+				"maxx": -76.144352,
+				"maxy": 42.638758
 			}
 		}
 	]

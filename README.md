@@ -127,7 +127,7 @@ Options
  
 ### Notes on command line options
  
-The number of "workers"" affects the number of requests that will be generated simultaneously - in general the higher the value for this parameter, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to respond to the request in a timeframe that is less than the timeout for the socket connection. If you are seeing "socket hang up" errors (indicating that the request load has possibly caused the server to crash or that the server simply can't respond quickly enough), try restarting with a lower worker number to throttle the request rate.
+The number of "workers" affects the number of requests that will be generated simultaneously - in general the higher the value for this parameter, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to respond to the request in a timeframe that is less than the timeout for the socket connection. If you are seeing "socket hang up" errors (indicating that the request load has possibly caused the server to crash or that the server simply can't respond quickly enough), try restarting with a lower worker number to throttle the request rate (or increase the server's capacity to respond in a timely manner).
 
 Note that if you are seeing socket hang ups, it is an indication that the server possibly needs reconfiguration in order to boost its performance.
 

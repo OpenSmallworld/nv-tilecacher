@@ -204,6 +204,7 @@ function processConfigFile(configFileName) {
 		console.log(configFileName + ", Grand tile total = " + totalTiles);
 			
 		if (!countOnly) {
+			console.log("Started making tile requests...please wait.");
 			for (var i = 0; i < config.cacheareas.length; i++) {
 				var cacheArea = config.cacheareas[i];
 				// Actually make the requests instead of just adding up the number of tiles to do.

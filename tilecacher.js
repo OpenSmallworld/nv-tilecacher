@@ -16,7 +16,7 @@ var cli = commandLineArgs([
 	{ name: 'help', alias: 'h', description: 'Display usage' },
 	{ name: 'workers', alias: 'w', type: Number, defaultOption: 10, description: 'Number of simultaneous requests made at a time (default 10)'},
 	{ name: 'countonly', alias: 'o', type: Boolean, defaultOption: false, description: 'Whether to only count tiles or not - true or false (default false)'},
-	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The number of requests that progress is reported on e.g. every 100 requests, 1000 requests etc'},
+	{ name: 'reportinterval', alias: 'r', type: Number, description: 'The number of requests that progress is reported on e.g. every 100 requests, 1000 requests etc. Requires verboserequests to be true.'},
 	{ name: 'connectionpooling', alias: 'p', type: Boolean, description: 'Use connection pooling'},
 	{ name: 'verbose', alias: 'v', type: Boolean, description: 'Output information verbosely'},
 	{ name: 'verboserequests', alias: 'b', type: Boolean, description: 'Output request information verbosely'},

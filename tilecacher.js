@@ -64,7 +64,7 @@ if (typeof options.layersoverride != 'undefined') {
 	var l = options.layersoverride.replace('[', '["');
 	l = l.replace(']', '"]');
 	l = l.replace(/,/g, '","');
-	console.log("Overriding layers using " + l);
+	console.log('Overriding layers using ' + l);
 	layersOverride = JSON.parse(l);
 }
 
@@ -72,7 +72,7 @@ if (typeof options.layersoverride != 'undefined') {
 var useconnectionpooling = (options.connectionpooling) ? options.connectionpooling : false; 
 
 if (configDir) {
-	fs.readdir(configDir, function(err, files) {
+	fs.readdir(configDir, function directoryReadCallback(err, files) {
 		for (var i = 0; i <= files.length; i++) {
 			var fn = files[i];
 			//console.log(fn);
@@ -90,7 +90,7 @@ else {
 }
 
 function processConfigFile(configFileName) {
-	fs.readFile(configFileName, 'utf8', function(err, data) {
+	fs.readFile(configFileName, 'utf8', function configfileProcessingCallback(err, data) {
 		if (err) throw err;
 		config = JSON.parse(data);
 		
@@ -121,7 +121,7 @@ function processConfigFile(configFileName) {
 				console.log("Requesting: http://" + task.servername + ":" + task.serverport + task.layerTileUrl);
 			}
 			
-			var req = http.request(options, function(response) {
+			var req = http.request(options, function httpRequestCallback(response) {
 				response.on('data', function(chunk){
 					// Grab the response data i.e. the image but don't do anything with it.
 				});

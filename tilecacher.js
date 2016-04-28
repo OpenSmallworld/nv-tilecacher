@@ -91,7 +91,14 @@ else {
 
 function processConfigFile(configFileName) {
 	fs.readFile(configFileName, 'utf8', function configfileProcessingCallback(err, data) {
-		if (err) throw err;
+		if (err) {
+			if (err.code === 'ENOENT') {
+			  console.log('File ' + err.path + ' not found!');
+			  return;
+			} else {
+			  throw err;
+			}
+		} 
 		config = JSON.parse(data);
 		
 		// totalTiles represents the grand total of tiles to process for every cache area in the configuration file.

@@ -162,7 +162,7 @@ Tiles done = 4000, rate = 143.98329793743926 requests/second (82178 left, elapse
 Tiles done = 5000, rate = 146.2287602725704 requests/second (81178 left, elapsed time = 34.193 seconds, ETC = 0.15420663077777777 hours)
 ```
 
-## Usage
+## Notes on Usage
 
 It is often useful to run the tilecacher in "countonly" mode using the -o command line option first. This will calculate the number of tiles without actually generating the requests, which is useful to gauge the likely time to complete based on a known request run rate. Depending on the time estimation you make, you may decide to adjust the bounds in the configuration file. In this way you can fine-tune the area boundaries if you would like to have some cache pre-populated but are constrained to do that within a certain time window.
 

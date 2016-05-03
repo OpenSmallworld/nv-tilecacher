@@ -1,6 +1,6 @@
 # tilecacher
 
-A nodejs client that generates WMTS requests for map tiles from Network Viewer based server infrastructures, in exactly the same way as a browser-based Network Viewer client would when a user is panning and zooming around the map. These requests will cause the maptiles to be cached in the Network Viewer tile cache, so this can be used as an alternate mechanism for pre-populating the cache (the other mechanism being the automated pre-population techniques described in the NV documentation).
+A nodejs client that generates WMTS requests for map tiles from Network Viewer based server infrastructures, in exactly the same way as a browser-based Network Viewer client would when a user is panning and zooming around the map. These requests will cause the maptiles to be created and cached in the Network Viewer tile cache if they do not exist in the cache already, so this can be used as an alternate mechanism for pre-populating the cache (the other mechanism being the automated pre-population techniques described in the NV documentation).
 
 ## To install and run:
 * Install [Nodejs](https://nodejs.org/en/)

@@ -113,7 +113,7 @@ Options
   -w, --workers number              Number of simultaneous requests made at a time (default 10)
   -o, --countonly                   Whether to only count tiles or not -true or false (default false)
   -r, --reportinterval number       The number of requests that progress is reported on e.g. every 100 requests,
-                                    1000 requests etc
+                                    1000 requests etc. Requires verboserequests to be true.
   -p, --connectionpooling           Use connection pooling
   -v, --verbose                     Output information verbosely
   -b, --verboserequests             Output request information verbosely
@@ -127,9 +127,7 @@ Options
  
 ### Notes on command line options
  
-The number of "workers" affects the number of requests that will be generated simultaneously - in general the higher the value for this parameter, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to respond to the request in a timeframe that is less than the timeout for the socket connection. If you are seeing "socket hang up" errors (indicating that the request load has possibly caused the server to crash or that the server simply can't respond quickly enough), try restarting with a lower worker number to throttle the request rate (or increase the server's capacity to respond in a timely manner).
-
-Note that if you are seeing socket hang ups, it is an indication that the server possibly needs reconfiguration in order to boost its performance.
+The number of "workers" affects the number of requests that will be generated simultaneously - in general the higher the value for this parameter, the higher the rate of requests. However beware setting this too high as you may swamp the server's capability to respond to the request in a timeframe that is less than the timeout for the socket connection. If you are seeing "socket hang up" errors (indicating that the request load has possibly caused the server to crash or that the server simply can't respond quickly enough), try restarting with a lower worker number to throttle the request rate (or increase the server's capacity to respond in a timely manner). See below for more on socket hangups.
 
 Connection pooling is where the HTTP requests use a pool of sockets rather than creating their own socket from scratch every time. This has been know to cause problems (specifically ENOBUF errors) in situations where the tilecacher is generating requests so quickly that the socket connection pool is full. The connection pooling behaviour can be switched off and this is the default i.e. every HTTP request will generate a new socket. However the connection pooloing behaviour can be turned on using the -p option.
 
@@ -176,5 +174,5 @@ Depending on the server you are making calls to you may see errors. One type of 
 Error: socket hang up
 ```
 
-This indicates that the WMTS request that the tilecacher made was unexpectedly closed before the response to that request was made. It indicates a problem on the serverside, most likely that the server is unable to respond quickly enough for whatever reason. There are a number of possible reasons for this i.e. an issue with the node reverse proxy, the JBoss instance (including the EIS servers) or possible the machine those processes are running on.
+This indicates that the WMTS request that the tilecacher made was unexpectedly closed before the response to that request was made. It indicates a problem on the serverside, most likely that the server is unable to respond quickly enough and the socket was closed after a timeout. There are a number of possible reasons for this i.e. an issue with the node reverse proxy, the JBoss instance (including the EIS servers) or possibly the physical machine those processes are running on being too busy.
 

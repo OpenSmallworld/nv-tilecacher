@@ -176,3 +176,11 @@ Error: socket hang up
 
 This indicates that the WMTS request that the tilecacher made was unexpectedly closed before the response to that request was made. It indicates a problem on the serverside, most likely that the server is unable to respond quickly enough and the socket was closed after a timeout. There are a number of possible reasons for this i.e. an issue with the node reverse proxy, the JBoss instance (including the EIS servers) or possibly the physical machine those processes are running on being too busy. Basically, your server is running too slow to service the number of requests you're making.
 
+### Typical Tile Rates
+
+For an uncached area you would expect at least 10 tiles per second to be reported from the tilecacher for a single GSS EIS server. Typically it would be more than this e.g. perhaps over 20 but less than 30 tiles per second. The exact number will vary depending on your database optimisation, visibilities etc. If you see a rate that is less than 10 tiles per second then something is wrong and you should look at the configuration of your Smallworld installation to ascertain the cause. Possible reasons can include rendering too much data on the map at selected view scales, poor database spatial indexing, slow network between the database server and the web infrastructure etc.
+
+Note that if you see a very high rate e.g. many hundreds of tiles per second then it is likely that you are making requests on an area that is already cached, especially if you only have one GSS EIS server. In this scenario the rate is high because the tiles are pre-rendered, so the request is simply to retrieve the existing file.
+
+Increasing the number of GSS EIS servers should increase the overall throughput of the system which in turn will translate into an increased tile rate. Note that the time to create an individual tile will not decrease by adding more servers, however the number of requests for tiles that the system can respond to simultaneously will. In other words adding more EIS servers will increase the scalability of the system.
+

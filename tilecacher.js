@@ -1,7 +1,8 @@
-var http = require('http');
-var fs = require('fs');
-var async = require('async');
-var commandLineArgs = require('command-line-args');
+var http = require('http'),
+fs = require('fs'),
+async = require('async'),
+commandLineArgs = require('command-line-args'),
+getUsage = require('command-line-usage');
 
 // Ramp up the number of sockets so that we can make as many web calls as possible.
 http.globalAgent.maxSockets = 500000;
@@ -10,7 +11,8 @@ const usageOptions = {
 	title: 'tilecacher',
 	description: 'Makes WMTS requests to a server over a set of bounding boxes'
 }
-var cli = commandLineArgs([
+
+var optionDef = [
 	{ name: 'configfile', alias: 'c', type: String, description: 'The name of a JSON file containing the caching definitions' },
 	{ name: 'configdir', alias: 'd', type: String, description: 'A directory that contains a set of JSON config files. Use instead of -c for multiple configs' },
 	{ name: 'help', alias: 'h', description: 'Display usage' },
@@ -26,12 +28,33 @@ var cli = commandLineArgs([
 	{ name: 'servernameoverride', alias: 'k', type: String, description: 'Override the name of the server'},
 	{ name: 'serverportoverride', alias: 'l', type: Number, description: 'Override the server port'},
 	{ name: 'layersoverride', alias: 'm', type: String, description: 'Override the layers'}
-])
+];
 
-var options = cli.parse();
+var options = commandLineArgs(optionDef);
+var optionList = [];
+
+optionList.push({
+			header: 'tilecacher',
+			content: 'Tool for making WMTS requests to a tile server'
+});
+
+var optionDetail = {
+	header: 'Options',
+	optionList: []
+}
+
+optionDef.forEach(option => {
+	optionDetail.optionList.push({
+		name: option.name,
+		alias: option.alias,
+		description: option.description
+	})
+});
+
+optionList.push(optionDetail);
 
 if (options.help) {
-	console.log(cli.getUsage(options, usageOptions));
+	console.log(getUsage(optionList));
 	return;
 }
 

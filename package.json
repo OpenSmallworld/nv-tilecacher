@@ -1,0 +1,23 @@
+{
+  "name": "tilecacher",
+  "version": "1.0.0",
+  "description": "Utility to making WMTS requests to a tile server from the command line",
+  "main": "tilecacher.js",
+  "dependencies": {
+    "async": "^2.0.1",
+    "command-line-args": "^3.0.1",
+    "fs": "^0.0.1-security",
+    "command-line-usage": "^3.0.3",
+    "http": "^0.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.build.ge.com:105002616/tilecacher"
+  },
+  "author": "Phil Robinson",
+  "license": "ISC"
+}

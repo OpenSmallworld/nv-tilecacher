@@ -5,6 +5,10 @@ A nodejs client that generates WMTS requests for map tiles from Network Viewer b
 ## To install and run:
 * Install [Nodejs](https://nodejs.org/en/)
 * Install dependencies:
+  * npm install
+  
+or alternatively...
+
   * npm install [async](https://github.com/caolan/async)
   * npm install [command-line-args](https://www.npmjs.com/package/command-line-args)
   

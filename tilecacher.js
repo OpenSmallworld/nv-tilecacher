@@ -2,7 +2,8 @@ var http = require('http'),
 fs = require('fs'),
 async = require('async'),
 commandLineArgs = require('command-line-args'),
-getUsage = require('command-line-usage');
+getUsage = require('command-line-usage'),
+util = require('util');
 
 // Ramp up the number of sockets so that we can make as many web calls as possible.
 http.globalAgent.maxSockets = 500000;
@@ -27,7 +28,8 @@ var optionDef = [
 	{ name: 'zoomstopoverride', alias: 'j', type: Number, description: 'Override the zoom stop value'},
 	{ name: 'servernameoverride', alias: 'k', type: String, description: 'Override the name of the server'},
 	{ name: 'serverportoverride', alias: 'l', type: Number, description: 'Override the server port'},
-	{ name: 'layersoverride', alias: 'm', type: String, description: 'Override the layers'}
+	{ name: 'layersoverride', alias: 'm', type: String, description: 'Override the layers'},
+	{ name: 'displaymemoryusage', alias: 'u', type: Boolean, description: 'Display the memory heap usage'}
 ];
 
 var options = commandLineArgs(optionDef);
@@ -80,6 +82,7 @@ var zoomStartOverride = options.zoomstartoverride;
 var zoomStopOverride = options.zoomstopoverride;
 var serverNameOverride = options.servernameoverride;
 var serverPortOverride = options.serverportoverride;
+var displayMemoryUsage = (options.displaymemoryusage) ? options.displaymemoryusage : false;
 
 var layersOverride;
 
@@ -188,6 +191,11 @@ function processConfigFile(configFileName) {
 		
 		var q = async.queue(makeRequest, numWorkers);
 		
+		if (displayMemoryUsage) {
+			console.log("Memory used: " + util.inspect(process.memoryUsage()));
+		}
+
+		
 		for (var i = 0; i < config.cacheareas.length; i++) {
 			var cacheArea = config.cacheareas[i];
 			
@@ -221,6 +229,10 @@ function processConfigFile(configFileName) {
 				var tiles = getTileNumbers(zoom, cacheArea.bounds);
 
 				tilesToDo += (tiles[2] - tiles[0] + 1) * (tiles[3] - tiles[1] + 1) * layernames.length;
+				
+				if (displayMemoryUsage) {
+					console.log("Starting Memory used: " + util.inspect(process.memoryUsage()));
+				}
 			}
 			
 			// The total number of tiles is the sum of all the tiles for each cache area.
@@ -257,6 +269,17 @@ function processConfigFile(configFileName) {
 					/* if (outputverbose) {
 					 console.log("Processing zoom level " + zoom + ", xmin = " + tiles[0] + " xmax = " + tiles[2] + ", ymin = " + tiles[1] + " ymax = " + tiles[3]);
 					} */
+					
+					var memCount = 0;
+					var memDiv;
+					var totalTiles = (tiles[2] - tiles[0]) * (tiles[3] - tiles[1]);
+					
+					if (totalTiles > 100000) {
+						memDiv = 100000;
+					}
+					else {
+						memDiv = Math.round(totalTiles / 10);
+					}
 
 					for (var x = tiles[0]; x <= tiles[2]; x++) {
 						for (var y = tiles[1]; y <= tiles[3]; y++) {
@@ -270,6 +293,14 @@ function processConfigFile(configFileName) {
 									serverport: serverport,
 									layerTileUrl: layerTileUrl
 								});
+								
+								memCount++;
+								
+								if (displayMemoryUsage) {
+									if (memCount % memDiv == 0) {
+										console.log("Memory used: " + util.inspect(process.memoryUsage()));
+									}
+								}
 							}
 						}
 					}

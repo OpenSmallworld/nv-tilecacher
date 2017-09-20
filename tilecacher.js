@@ -155,6 +155,7 @@ function processConfigFile(configFileName) {
 			}
 			
 			var req = http.request(options, function httpRequestCallback(response) {
+				console.log(response.statusCode)
 				response.on('data', function(chunk){
 					// Grab the response data i.e. the image but don't do anything with it.
 				});

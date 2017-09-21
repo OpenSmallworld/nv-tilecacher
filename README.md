@@ -12,6 +12,7 @@ The dependencies can be added explicitly if you choose...
   * npm install [async](https://github.com/caolan/async)
   * npm install [command-line-args](https://www.npmjs.com/package/command-line-args)
   * npm install [command-line-usage](https://www.npmjs.com/package/command-line-usage)
+  * npm install [follow-redirects](https://www.npmjs.com/package/follow-redirects)
   
 Place a copy of tilecacher.js and a config.json file in a directory and then run the cacher from a command line in a similar way to the example below:
 

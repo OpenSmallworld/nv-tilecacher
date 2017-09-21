@@ -1,5 +1,6 @@
-var http = require('http'),
-fs = require('fs'),
+var fs = require('fs'),
+//http = require('http'),
+http = require('follow-redirects').http,
 async = require('async'),
 commandLineArgs = require('command-line-args'),
 getUsage = require('command-line-usage'),
@@ -161,19 +162,10 @@ function processConfigFile(configFileName) {
 					console.log("Request returned Status code: " + response.statusCode)					
 				}					
 
-				if (response.statusCode > 300 && response.statusCode < 400) {
-					/*
-					// The location for most redirects will only contain the path,  not the hostname;
-					if (url.parse(response.headers.location).hostname) {
-					*/
-						console.log("Redirected to " + response.headers.location)
-					/*
-					} else {
-						console.log("Redirected to " + url.parse(response.request.location).hostname + response.headers.location)
-					}
-					*/
+				if (verboserequests) {
+					console.log("Requested: ", response.responseUrl);
 				}
-
+				
 				response.on('data', function(chunk){
 					// Grab the response data i.e. the image but don't do anything with it.
 				});

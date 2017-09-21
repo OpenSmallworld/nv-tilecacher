@@ -3,7 +3,8 @@ fs = require('fs'),
 async = require('async'),
 commandLineArgs = require('command-line-args'),
 getUsage = require('command-line-usage'),
-util = require('util');
+util = require('util'),
+url = require('url');
 
 // Ramp up the number of sockets so that we can make as many web calls as possible.
 http.globalAgent.maxSockets = 500000;
@@ -155,7 +156,34 @@ function processConfigFile(configFileName) {
 			}
 			
 			var req = http.request(options, function httpRequestCallback(response) {
-				console.log(response.statusCode)
+
+				if (response.statusCode != 200) {
+					console.log("Request returned Status code: " + response.statusCode)					
+				}					
+
+				if (response.statusCode > 300 && response.statusCode < 400 && response.headers.location) {
+					// The location for some (most) redirects will only contain the path,  not the hostname;
+					// detect this and add the host to the path.
+					if (url.parse(response.headers.location).hostname) {
+						  // Hostname included; make request to res.headers.location
+					} else {
+						  // Hostname not included; get host from requested URL (url.parse()) and prepend to location.
+					}
+				} else {
+					console.log("Redirect with no location!")					
+				}
+
+				if (response.statusCode != 200) {
+
+					switch(response.statusCode) {
+						response.red
+						case 302:
+						console.log("Request returned Status code: " + response.statusCode + ", Location: " + response.headers['location'])
+						default:
+							console.log("Request returned Status code: " + response.statusCode)					
+					}					
+				}
+
 				response.on('data', function(chunk){
 					// Grab the response data i.e. the image but don't do anything with it.
 				});

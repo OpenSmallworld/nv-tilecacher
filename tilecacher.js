@@ -161,27 +161,17 @@ function processConfigFile(configFileName) {
 					console.log("Request returned Status code: " + response.statusCode)					
 				}					
 
-				if (response.statusCode > 300 && response.statusCode < 400 && response.headers.location) {
-					// The location for some (most) redirects will only contain the path,  not the hostname;
-					// detect this and add the host to the path.
+				if (response.statusCode > 300 && response.statusCode < 400) {
+					/*
+					// The location for most redirects will only contain the path,  not the hostname;
 					if (url.parse(response.headers.location).hostname) {
-						  // Hostname included; make request to res.headers.location
+					*/
+						console.log("Redirected to " + response.headers.location)
+					/*
 					} else {
-						  // Hostname not included; get host from requested URL (url.parse()) and prepend to location.
+						console.log("Redirected to " + url.parse(response.request.location).hostname + response.headers.location)
 					}
-				} else {
-					console.log("Redirect with no location!")					
-				}
-
-				if (response.statusCode != 200) {
-
-					switch(response.statusCode) {
-						response.red
-						case 302:
-						console.log("Request returned Status code: " + response.statusCode + ", Location: " + response.headers['location'])
-						default:
-							console.log("Request returned Status code: " + response.statusCode)					
-					}					
+					*/
 				}
 
 				response.on('data', function(chunk){

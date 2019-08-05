@@ -2,15 +2,9 @@
 	"cacheareas": [
 		{
 			"description": "City of Exeter, UK",
-			"serverprotocol": "https",
-			"servername": "cbgdo693.nms.dev.ps.ge.com",
-			"serverport": 30443,
-			"nocertificatecheck": true,
-			"useauth": true,
-			"clientid": "client_user",
-			"clientsecret": "client_user",
-			"refreshtokeninterval": 1000,		
-			"layernames": ["Cadastral"],
+			"servername": "cbgnpi218.nms.dev.ps.ge.com",
+			"serverport": 80,
+			"layernames": ["Roads"],
 			"stylename": "",
 			"format": "image/png",
 			"tilematrixset": "EPSG-900913",

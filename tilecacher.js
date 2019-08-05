@@ -1,14 +1,16 @@
 var fs = require('fs'),
-//http = require('http'),
 http = require('follow-redirects').http,
+https = require('follow-redirects').https,
 async = require('async'),
 commandLineArgs = require('command-line-args'),
 getUsage = require('command-line-usage'),
 util = require('util'),
 url = require('url');
+uaaUtil = require('predix-uaa-client');
 
 // Ramp up the number of sockets so that we can make as many web calls as possible.
 http.globalAgent.maxSockets = 500000;
+https.globalAgent.maxSockets = 500000;
 
 const usageOptions = {
 	title: 'tilecacher',
@@ -30,6 +32,7 @@ var optionDef = [
 	{ name: 'zoomstopoverride', alias: 'j', type: Number, description: 'Override the zoom stop value'},
 	{ name: 'servernameoverride', alias: 'k', type: String, description: 'Override the name of the server'},
 	{ name: 'serverportoverride', alias: 'l', type: Number, description: 'Override the server port'},
+	{ name: 'serverprotocoloverride', alias: 'n', type: String, description: 'Override the protocol of the server'},
 	{ name: 'layersoverride', alias: 'm', type: String, description: 'Override the layers'},
 	{ name: 'displaymemoryusage', alias: 'u', type: Boolean, description: 'Display the memory heap usage'}
 ];
@@ -84,6 +87,7 @@ var zoomStartOverride = options.zoomstartoverride;
 var zoomStopOverride = options.zoomstopoverride;
 var serverNameOverride = options.servernameoverride;
 var serverPortOverride = options.serverportoverride;
+var serverProtocolOverride = options.serverprotocoloverride;
 var displayMemoryUsage = (options.displaymemoryusage) ? options.displaymemoryusage : false;
 
 var layersOverride;
@@ -137,27 +141,70 @@ function processConfigFile(configFileName) {
 		
 		function makeRequest(task, callback) {
 			//
-			// This is the worker function that makes an HTTP request for a specific tile based on the 
+			// This is the worker function that makes an HTTP/HTTPS request for a specific tile based on the 
 			// supplied task parameters. It is called as an async queue worker i.e. it processes a number
 			// of tasks placed on the queue.
+			// The auth token is refreshed every task.refreshTokenInterval calls to avoid expiring during 
+			// very long run times.
 			//
+			
+			// If nocertificatecheck parameter is set to true then certificate is not checked during HTTPS requests 
+			// (not safe solution, should be used mainly for development).
+			if (task.noCertificateCheck) {
+				process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+			}
+			else {
+				process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 1;
+			}
+			
+			if (task.useAuth)
+			{
+				// If auth has to be used then get token first.
+				var uaaUrl = task.serverprotocol + "://" + task.servername + ":" + task.serverport + "/uaa/oauth/token?grant_type=client_credentials";
+				refreshToken = ((task.tileNumber % task.refreshTokenInterval) == 0);
+
+				if (verboserequests && refreshToken) {
+					console.log("Refreshing token: " + uaaUrl);
+				}	
+				
+				uaaUtil.getToken(uaaUrl, task.clientId, task.clientSecret, refreshToken).then((tokenData) => {
+					internalMakeRequest(task, callback, tokenData.access_token);
+				}).catch((e) => {
+					console.log("Error while getting token: " + e.message);
+				});
+			}
+			else {
+				// If auth has not to be used then don't get token (use empty token below).
+				internalMakeRequest(task, callback, "");
+			}
+		}
+
+		function internalMakeRequest(task, callback, token) {
 			var options = {
 					host: task.servername,
 					path: task.layerTileUrl,
 					port: task.serverport,
-					method: 'GET'
+					method: 'GET',
+					headers: {Authorization: 'Bearer ' + token}
 			};
-			
+
 			if (!useconnectionpooling) {
 				options.agent = false;
 			}
-			
-			if (verboserequests) {
-				console.log("Requesting: http://" + task.servername + ":" + task.serverport + task.layerTileUrl);
-			}
-			
-			var req = http.request(options, function httpRequestCallback(response) {
 
+			if (verboserequests) {
+				console.log("Requesting: " + task.serverprotocol + "://" + task.servername + ":" + task.serverport + task.layerTileUrl);
+			}	
+
+			// Determine protocol base on configuration. Default is http.
+			var protocol;
+			if (task.serverprotocol === 'https') {
+				protocol = https;
+			} else {
+				protocol = http;
+			}	
+			
+			var req = protocol.request(options, function httpRequestCallback(response) {
 				if (response.statusCode != 200) {
 					console.log("Request returned Status code: " + response.statusCode)					
 				}					
@@ -166,9 +213,11 @@ function processConfigFile(configFileName) {
 					console.log("Requested: ", response.responseUrl);
 				}
 				
+				var resp='';
 				response.on('data', function(chunk){
 					// Grab the response data i.e. the image but don't do anything with it.
 				});
+				
 				var currentTime = (new Date).getTime();
 				var elapsedTime = (currentTime - startTime) / 1000;
 				
@@ -270,6 +319,11 @@ function processConfigFile(configFileName) {
 
 				var servername = (typeof serverNameOverride != 'undefined') ? serverNameOverride : cacheArea.servername;
 				var serverport = (typeof serverPortOverride != 'undefined') ? serverPortOverride : cacheArea.serverport;			
+				var serverprotocol = (typeof serverProtocolOverride != 'undefined') ? serverProtocolOverride : cacheArea.serverprotocol;	
+				var nocertificatecheck = cacheArea.nocertificatecheck;
+				
+				//Tile number in processed config.
+				var tileNumber = 0;	
 				
 				// Actually request the tiles.
 				for (var zoom = zoomstart; zoom <= zoomstop; zoom++) {
@@ -300,12 +354,20 @@ function processConfigFile(configFileName) {
 								var layerTileUrl = encodeURI(tileUrl + "&layer=" + layernames[index]);
 								// Push a new tasks onto the async queue for the worker(s) to process.
 								q.push({ 
+									serverprotocol: serverprotocol,
 									servername: servername,
 									serverport: serverport,
-									layerTileUrl: layerTileUrl
+									layerTileUrl: layerTileUrl,
+									noCertificateCheck: nocertificatecheck,
+									useAuth: cacheArea.useauth,
+									clientId: cacheArea.clientid,
+									clientSecret: cacheArea.clientsecret,
+									refreshTokenInterval: cacheArea.refreshtokeninterval,
+									tileNumber: tileNumber
 								});
 								
 								memCount++;
+								tileNumber++;
 								
 								if (displayMemoryUsage) {
 									if (memCount % memDiv == 0) {

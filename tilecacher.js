@@ -160,7 +160,7 @@ function processConfigFile(configFileName) {
 			if (task.useAuth)
 			{
 				// If auth has to be used then get token first.
-				var uaaUrl = task.serverprotocol + "://" + task.servername + ":" + task.serverport + "/uaa/oauth/token?grant_type=client_credentials";
+				var uaaUrl = task.authUrl + "?grant_type=client_credentials";
 				refreshToken = ((task.tileNumber % task.refreshTokenInterval) == 0);
 
 				if (verboserequests && refreshToken) {
@@ -360,6 +360,7 @@ function processConfigFile(configFileName) {
 									layerTileUrl: layerTileUrl,
 									noCertificateCheck: nocertificatecheck,
 									useAuth: cacheArea.useauth,
+									authUrl: cacheArea.authurl,
 									clientId: cacheArea.clientid,
 									clientSecret: cacheArea.clientsecret,
 									refreshTokenInterval: cacheArea.refreshtokeninterval,

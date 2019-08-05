@@ -7,6 +7,7 @@
 			"serverport": 30443,
 			"nocertificatecheck": true,
 			"useauth": true,
+			"authurl": "https://cbgdo693.nms.dev.ps.ge.com:30443/uaa/oauth/token",
 			"clientid": "client_user",
 			"clientsecret": "client_user",
 			"refreshtokeninterval": 1000,		

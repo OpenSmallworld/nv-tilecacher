@@ -1,4 +1,5 @@
-docker build --build-arg HTTPS_PROXY=http://emea.proxy.ge.com -t dtr.predix.io/pwr-smallworld/tilecacher:SW521 .
+# Build the dockerfile using this command:
+# docker build --build-arg HTTPS_PROXY=http://emea.proxy.ge.com -t dtr.predix.io/pwr-smallworld/tilecacher:SW521 .
 FROM node:10.16-alpine AS base-nv-tilecacher
 RUN mkdir /tilecacher
 COPY . /tilecacher

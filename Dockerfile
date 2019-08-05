@@ -1,9 +1,15 @@
+docker build --build-arg HTTPS_PROXY=http://emea.proxy.ge.com -t dtr.predix.io/pwr-smallworld/tilecacher:SW521 .
 FROM node:10.16-alpine AS base-nv-tilecacher
-COPY . /
-RUN rm *.json
-RUN rm Dockerfile
-RUN rm -Rf .git
+RUN mkdir /tilecacher
+COPY . /tilecacher
+RUN rm /tilecacher/config*
+RUN rm /tilecacher/Dockerfile
+RUN rm /tilecacher/.gitignore
+RUN rm -Rf /tilecacher/.git
 
 FROM node:10.16-alpine AS nv-tilecacher
 COPY --from=base-nv-tilecacher . /
-CMD ["node", "tilecacher.js"]
+WORKDIR /tilecacher
+RUN npm install
+RUN npm install follow-redirects
+CMD ["node", "/tilecacher/tilecacher.js", "-d", "/tilecacher/config"]

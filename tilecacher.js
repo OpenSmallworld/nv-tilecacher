@@ -106,7 +106,7 @@ if (configDir) {
 			//console.log(fn);
 			if (fn && fn.match(/.json/)) {
 				//console.log("Matched: " + fn);
-				processConfigFile(configDir + "\\" + fn);
+				processConfigFile(configDir + "//" + fn);
 			}
 		}
 	})

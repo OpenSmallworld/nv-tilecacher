@@ -1,0 +1,21 @@
+{
+	"cacheareas": [
+		{
+			"description": "City of Exeter, UK",
+			"servername": "cbgnpi218.nms.dev.ps.ge.com",
+			"serverport": 80,
+			"layernames": ["Roads"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 8,
+			"stopzoomlevel": 14,
+			"bounds": {
+				"minx": -3.567553,
+				"miny": 50.702354,
+				"maxx": -3.494596,
+				"maxy": 50.735503
+			}
+		}
+	]
+}

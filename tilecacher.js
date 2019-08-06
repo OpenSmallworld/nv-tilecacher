@@ -354,7 +354,7 @@ function processConfigFile(configFileName) {
 								var layerTileUrl = encodeURI(tileUrl + "&layer=" + layernames[index]);
 								// Push a new tasks onto the async queue for the worker(s) to process.
 								q.push({ 
-									serverprotocol: serverprotocol,
+									serverprotocol: (serverprotocol != null) ? serverprotocol : "http",
 									servername: servername,
 									serverport: serverport,
 									layerTileUrl: layerTileUrl,

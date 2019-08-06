@@ -101,7 +101,7 @@ The configuration file can contain multiple areas to request tiles for by adding
 
 The parameters in the file are as follows:
 * **description** - A string containing a description of the area
-* **serverprotocol** - The protocol to be used for server connection ("http" or "https").
+* **serverprotocol** - The protocol to be used for server connection ("http" or "https"). This parameter is optional and defaults to "http".
 * **servername** - The machine name of the server that responds to the requests. This should be the same machinename that is being used for the Network Viewer URL.
 * **serverport** - The TCP port that the server is listening on. This should be the same port that the Network Viewer app is using.
 * **nocertificatecheck** - If set to true then certificate will not be validated when using https connection.

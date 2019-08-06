@@ -13,7 +13,8 @@ The dependencies can be added explicitly if you choose...
   * npm install [command-line-args](https://www.npmjs.com/package/command-line-args)
   * npm install [command-line-usage](https://www.npmjs.com/package/command-line-usage)
   * npm install [follow-redirects](https://www.npmjs.com/package/follow-redirects)
-  
+  * npm install [predix-uaa-client](https://www.npmjs.com/package/predix-uaa-client)
+
 Place a copy of tilecacher.js and a config.json file in a directory and then run the cacher from a command line in a similar way to the example below:
 
 `
@@ -29,14 +30,21 @@ The client uses a file containing a JSON description of each area you wish to ma
 	"cacheareas": [
 		{
 			"description": "City of Exeter, UK",
-			"servername": "cbgswws05.nms.dev.ps.ge.com",
-			"serverport": 3200,
-			"layernames": ["Support", "Network"],
+			"serverprotocol": "https",
+			"servername": "cbgdo693.nms.dev.ps.ge.com",
+			"serverport": 30443,
+			"nocertificatecheck": true,
+			"useauth": true,
+			"authurl": "https://cbgdo693.nms.dev.ps.ge.com:30443/uaa/oauth/token",
+			"clientid": "client_user",
+			"clientsecret": "client_user",
+			"refreshtokeninterval": 1000,		
+			"layernames": ["Cadastral"],
 			"stylename": "",
 			"format": "image/png",
 			"tilematrixset": "EPSG-900913",
-			"startzoomlevel": 0,
-			"stopzoomlevel": 20,
+			"startzoomlevel": 8,
+			"stopzoomlevel": 14,
 			"bounds": {
 				"minx": -3.567553,
 				"miny": 50.702354,
@@ -93,8 +101,15 @@ The configuration file can contain multiple areas to request tiles for by adding
 
 The parameters in the file are as follows:
 * **description** - A string containing a description of the area
+* **serverprotocol** - The protocol to be used for server connection ("http" or "https"). This parameter is optional and defaults to "http".
 * **servername** - The machine name of the server that responds to the requests. This should be the same machinename that is being used for the Network Viewer URL.
 * **serverport** - The TCP port that the server is listening on. This should be the same port that the Network Viewer app is using.
+* **nocertificatecheck** - If set to true then certificate will not be validated when using https connection.
+* **useauth** - If set to true then auth token will be retrieved before calling WMTS service.
+* **authurl** - The URL to be used for retrieving auth token.
+* **clientid** - The user ID to be used for retrieving auth token.
+* **clientsecret** - The user secret to be used for retrieving auth token.
+* **refreshtokeninterval** - The interval between token refreshes (eg. when set to 1000 then token will be refreshed at every 1000 WMTS service call).
 * **layernames** - An array of strings representing the names of the layers that requests should be made for. If there is more than one layer, then a request for each layer will be made for each tile
 * **stylename** - The name of the styles to be used
 * **format** - The MIME type of the raster image that should be returned
@@ -103,7 +118,8 @@ The parameters in the file are as follows:
 * **stopzoomlevel** - The lowermost zoom level to use e.g. 20
 * **bounds** - An object containing the bottom left and top right coordinates of the area (in EPSG:4326 decimal degree coordinates aka "lat/lons")
 
-Note that some of the parameters correspond to WMTS request parameters, in particular servername, serverport, layernames, stylename, format and tilematrixset. The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.
+Note that some of the parameters correspond to WMTS request parameters, in particular serverprotocol, servername, serverport, layernames, stylename, format and tilematrixset. 
+The zoom level parameters are used along with the bounds to calculate the tile row and columns numbers for each zoom level. These numbers are then used in the WMTS request.
 
 In Network Viewer WMTS requests are handled in the first instance by a nodejs server. That server will be using a machinename and a port number that will also be used for the application running in the browser. It is this machinename and port number you should use in the configuration files. It will allow the tilecacher to construct WMTS requests that match what a Network Viewer client would construct when fetching raster tiles in a view (and cached if needed).
 
@@ -112,23 +128,24 @@ In Network Viewer WMTS requests are handled in the first instance by a nodejs se
 ```
 Options
 
-  -c, --configfile string           The name of a JSON file containing the caching definitions
-  -d, --configdir string            A directory that contains a set of JSON config files. Use instead of -c for
-                                    multiple configs
-  -h, --help                        Display usage
-  -w, --workers number              Number of simultaneous requests made at a time (default 10)
-  -o, --countonly                   Whether to only count tiles or not -true or false (default false)
-  -r, --reportinterval number       The number of requests that progress is reported on e.g. every 100 requests,
-                                    1000 requests etc. Requires verboserequests to be true.
-  -p, --connectionpooling           Use connection pooling
-  -v, --verbose                     Output information verbosely
-  -b, --verboserequests             Output request information verbosely
-  -s, --sockettimeout number        The timeout period for the socket connection in seconds (default 120)
-  -i, --zoomstartoverride number    Override the zoom start value
-  -j, --zoomstopoverride number     Override the zoom stop value
-  -k, --servernameoverride string   Override the name of the server
-  -l, --serverportoverride number   Override the server port
-  -m, --layersoverride string       Override the layers
+  -c, --configfile string             The name of a JSON file containing the caching definitions
+  -d, --configdir string              A directory that contains a set of JSON config files. Use instead of -c for
+                                      multiple configs
+  -h, --help                          Display usage
+  -w, --workers number                Number of simultaneous requests made at a time (default 10)
+  -o, --countonly                     Whether to only count tiles or not -true or false (default false)
+  -r, --reportinterval number         The number of requests that progress is reported on e.g. every 100 requests,
+                                      1000 requests etc. Requires verboserequests to be true.
+  -p, --connectionpooling             Use connection pooling
+  -v, --verbose                       Output information verbosely
+  -b, --verboserequests               Output request information verbosely
+  -s, --sockettimeout number          The timeout period for the socket connection in seconds (default 120)
+  -i, --zoomstartoverride number      Override the zoom start value
+  -j, --zoomstopoverride number       Override the zoom stop value
+  -k, --servernameoverride string     Override the name of the server
+  -l, --serverportoverride number     Override the server port
+  -m, --layersoverride string         Override the layers
+  -n, --serverprotocoloverride string Override the server protocol
  ```
  
 ### Notes on command line options

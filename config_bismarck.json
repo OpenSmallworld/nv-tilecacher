@@ -2,8 +2,15 @@
 	"cacheareas": [
 		{
 			"description": "Bismarck, ND, USA",
-			"servername": "127.0.0.1",
-			"serverport": 80,
+                        "servername": "bifrost-service",
+                        "serverport": 30443,
+                        "serverprotocol": "https",
+                        "nocertificatecheck": true,
+                        "useauth": true,
+                        "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                        "clientid": "client_user",
+                        "clientsecret": "client_user",
+                        "refreshtokeninterval": 1000,	
 			"layernames": ["Distribution", "Layer2", "Layer3", "Layer4", "Layer5"],
 			"stylename": "",
 			"format": "image/png",

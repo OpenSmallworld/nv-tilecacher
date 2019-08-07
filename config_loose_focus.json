@@ -1,6 +1,15 @@
 {
 	"cacheareas": [{
 		"description": "Test",
+                "servername": "bifrost-service",
+                "serverport": 30443,
+                "serverprotocol": "https",
+                "nocertificatecheck": true,
+                "useauth": true,
+                "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                "clientid": "client_user",
+                "clientsecret": "client_user",
+                "refreshtokeninterval": 1000,	
 		"servername": "cbgswws05.nms.dev.ps.ge.com",
 		"serverport": 3200,
 		"layernames": ["Distribution",

@@ -2,8 +2,15 @@
 	"cacheareas": [
 		{
 			"description": "Cambourne, UK",
-			"servername": "localhost",
-			"serverport": 80,
+                        "servername": "bifrost-service",
+                        "serverport": 30443,
+                        "serverprotocol": "https",
+                        "nocertificatecheck": true,
+                        "useauth": true,
+                        "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                        "clientid": "client_user",
+                        "clientsecret": "client_user",
+                        "refreshtokeninterval": 1000,
 			"layernames": ["Transmission network", "MV Network", "LV Network", "Distribution structures", "Transmission structures", "Design Boundaries", "Areas"],
 			"stylename": "",
 			"format": "image/png",

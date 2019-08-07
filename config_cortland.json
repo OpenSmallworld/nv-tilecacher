@@ -2,8 +2,15 @@
 	"cacheareas": [
 		{
 			"description": "Cortland, NY, USA",
-			"servername": "ec2-50-19-107-52.compute-1.amazonaws.com",
-			"serverport": 80,
+                        "servername": "bifrost-service",
+                        "serverport": 30443,
+                        "serverprotocol": "https",
+                        "nocertificatecheck": true,
+                        "useauth": true,
+                        "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                        "clientid": "client_user",
+                        "clientsecret": "client_user",
+                        "refreshtokeninterval": 1000,	
 			"layernames": ["Areas", "Design", "Distribution", "LV network", "MV network", "Transmission structures", "Transmission network" ],
 			"stylename": "",
 			"format": "image/png",

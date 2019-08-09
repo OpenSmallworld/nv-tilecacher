@@ -3,8 +3,8 @@
 		{
 			"description": "USA",
                         "servername": "bifrost-service",
-                        "serverport": 30443,
-                        "serverprotocol": "https",
+                        "serverport": 3001,
+                        "serverprotocol": "http",
                         "nocertificatecheck": true,
                         "useauth": true,
                         "authurl": "http://uaa-service:8080/uaa/oauth/token",

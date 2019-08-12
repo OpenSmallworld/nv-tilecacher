@@ -3,7 +3,7 @@
 FROM node:10.16-alpine AS base-nv-tilecacher
 RUN mkdir /tilecacher
 COPY . /tilecacher
-RUN rm /tilecacher/config*
+RUN rm -Rf /tilecacher/example_config_files
 RUN rm /tilecacher/Dockerfile
 RUN rm /tilecacher/.gitignore
 RUN rm -Rf /tilecacher/.git

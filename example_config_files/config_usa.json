@@ -1,0 +1,28 @@
+{
+	"cacheareas": [
+		{
+			"description": "USA",
+                        "servername": "bifrost-service",
+                        "serverport": 3001,
+                        "serverprotocol": "http",
+                        "nocertificatecheck": true,
+                        "useauth": true,
+                        "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                        "clientid": "client_user",
+                        "clientsecret": "client_user",
+                        "refreshtokeninterval": 1000,	
+			"layernames": ["Support", "Network"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 16,
+			"stopzoomlevel": 17,
+			"bounds": {
+				"minx": -125.244141,
+				"miny": 27.059126,
+				"maxx": -66.357422,
+				"maxy": 46.920255
+			}
+		}
+	]
+}

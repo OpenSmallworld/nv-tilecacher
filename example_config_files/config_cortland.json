@@ -1,0 +1,28 @@
+{
+	"cacheareas": [
+		{
+			"description": "Cortland, NY, USA",
+                        "servername": "bifrost-service",
+                        "serverport": 3001,
+                        "serverprotocol": "http",
+                        "nocertificatecheck": true,
+                        "useauth": true,
+                        "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                        "clientid": "client_user",
+                        "clientsecret": "client_user",
+                        "refreshtokeninterval": 1000,	
+			"layernames": ["Areas", "Design", "Distribution", "LV network", "MV network", "Transmission structures", "Transmission network" ],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 0,
+			"stopzoomlevel": 10,
+			"bounds": {
+				"minx": -76.219196,
+				"miny": 42.573310,
+				"maxx": -76.144352,
+				"maxy": 42.638758
+			}
+		}
+	]
+}

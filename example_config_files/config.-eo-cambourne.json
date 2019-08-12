@@ -1,0 +1,28 @@
+{
+	"cacheareas": [
+		{
+			"description": "Cambourne, UK",
+                        "servername": "bifrost-service",
+                        "serverport": 3001,
+                        "serverprotocol": "http",
+                        "nocertificatecheck": true,
+                        "useauth": true,
+                        "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                        "clientid": "client_user",
+                        "clientsecret": "client_user",
+                        "refreshtokeninterval": 1000,
+			"layernames": ["Transmission network", "MV Network", "LV Network", "Distribution structures", "Transmission structures", "Design Boundaries", "Areas"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 0,
+			"stopzoomlevel": 21,
+			"bounds": {
+				"minx": -0.086449,
+				"miny": 52.211362,
+				"maxx": -0.060184,
+				"maxy": 52.226296
+			}
+		}
+	]
+}

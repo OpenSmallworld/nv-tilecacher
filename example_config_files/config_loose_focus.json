@@ -1,0 +1,29 @@
+{
+	"cacheareas": [{
+		"description": "Test",
+                "servername": "bifrost-service",
+                "serverport": 3001,
+                "serverprotocol": "http",
+                "nocertificatecheck": true,
+                "useauth": true,
+                "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                "clientid": "client_user",
+                "clientsecret": "client_user",
+                "refreshtokeninterval": 1000,	
+		"servername": "cbgswws05.nms.dev.ps.ge.com",
+		"serverport": 3200,
+		"layernames": ["Distribution",
+		"Transmission"],
+		"stylename": "",
+		"format": "image/png",
+		"tilematrixset": "EPSG-900913",
+		"startzoomlevel": 10,
+		"stopzoomlevel": 21,
+		"bounds": {
+			"minx": -3.539659,
+			"miny": 50.71785,
+			"maxx": -3.516707,
+			"maxy": 50.73456
+		}
+	}]
+}

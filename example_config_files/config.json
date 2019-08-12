@@ -1,0 +1,28 @@
+{
+	"cacheareas": [
+		{
+			"description": "City of Exeter, UK",
+                        "servername": "bifrost-service",
+                        "serverport": 3001,
+                        "serverprotocol": "http",
+                        "nocertificatecheck": true,
+                        "useauth": true,
+                        "authurl": "http://uaa-service:8080/uaa/oauth/token",
+                        "clientid": "client_user",
+                        "clientsecret": "client_user",
+                        "refreshtokeninterval": 1000,	
+			"layernames": ["Cadastral"],
+			"stylename": "",
+			"format": "image/png",
+			"tilematrixset": "EPSG-900913",
+			"startzoomlevel": 8,
+			"stopzoomlevel": 14,
+			"bounds": {
+				"minx": -3.567553,
+				"miny": 50.702354,
+				"maxx": -3.494596,
+				"maxy": 50.735503
+			}
+		}
+	]
+}
